@@ -1,0 +1,39 @@
+/* Ionic Variables and Theming. For more info, please see:
+http://ionicframework.com/docs/theming/ */
+
+/** Ionic CSS Variables **/
+:root {
+    /* Primary: Kentucky Bluegrass */
+    --primary-100: #F2FAFF;
+    --primary-200: #C0EBFE;
+    --primary-300: #8CDCF7;
+    --primary-400: #55C9E4;
+    --primary-500: #22AABF;
+    --primary-600: #0C8E99;
+    --primary-700: #037173;
+    --primary-800: #004D49;
+    --primary-900: #002622;
+
+    /* Accent: Étude Naturelle */
+    --accent-100: #F4FFF2;
+    --accent-200: #C7FEBA;
+    --accent-300: #9DF77F;
+    --accent-400: #76E544;
+    --accent-500: #51C210;
+    --accent-600: #459B05;
+    --accent-700: #397401;
+    --accent-800: #2A4D00;
+    --accent-900: #172600;
+
+    /* Neutral */
+    --neutral-100: #FAFBFC;
+    --neutral-200: #E8ECEE;
+    --neutral-300: #D7DDDF;
+    --neutral-400: #C7CED0;
+    --neutral-500: #B6C0C2;
+    --neutral-600: #909A9B;
+    --neutral-700: #6B7474;
+    --neutral-800: #464D4D;
+    --neutral-900: #222626;
+    
+}
