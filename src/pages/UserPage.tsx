@@ -32,6 +32,10 @@ const TD: FC<TdHTMLAttributes<HTMLTableCellElement>> = ({
 };
 
 const UserPage: FC = () => {
+  const handleDelete = () => {
+    console.log();
+  };
+
   return (
     <table className="w-full">
       <thead>
@@ -63,7 +67,10 @@ const UserPage: FC = () => {
           <TD>IT</TD>
           <TD>
             <div>
-              <button className="rounded p-1 font-bold text-neutral-100 bg-primary-500">
+              <button
+                className="rounded p-1 font-bold text-neutral-100 bg-primary-500"
+                onClick={handleDelete}
+              >
                 Delete
               </button>
             </div>

@@ -1,9 +1,9 @@
-import { NavigationSidebarItem } from './NavigationSideBarItem';
+import NavigationSidebarItem from './NavigationSideBarItem';
 
 import { FC, PropsWithChildren } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, Outlet } from 'react-router-dom';
 
-export const Layout: FC<PropsWithChildren> = ({ children }) => {
+const Layout: FC<PropsWithChildren> = () => {
   const location = useLocation();
 
   return (
@@ -28,7 +28,11 @@ export const Layout: FC<PropsWithChildren> = ({ children }) => {
           </li>
         </ul>
       </nav>
-      <main className="col-span-10 p-8">{children}</main>
+      <main className="col-span-10 p-8">
+        <Outlet />
+      </main>
     </div>
   );
 };
+
+export default Layout;

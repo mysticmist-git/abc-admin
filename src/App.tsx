@@ -4,14 +4,16 @@ import {
   BrowserRouter as Router,
   Routes,
 } from 'react-router-dom';
-import { Layout } from './layouts/layout';
-import UserPage from './pages/UserPage';
+import Layout from '@/layouts/Layout';
+import UserPage from '@/pages/UserPage';
+import SignIn from '@/pages/SignIn';
 
 const App = () => {
   return (
     <Router>
-      <Layout>
-        <Routes>
+      <Routes>
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/" element={<Layout />}>
           <Route path="users" element={<UserPage />} />
           <Route
             path="posts"
@@ -19,8 +21,8 @@ const App = () => {
           />
 
           <Route path="/" element={<Navigate to="/users" />} />
-        </Routes>
-      </Layout>
+        </Route>
+      </Routes>
     </Router>
   );
 };
