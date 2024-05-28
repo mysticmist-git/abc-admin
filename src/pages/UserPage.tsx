@@ -1,77 +1,101 @@
-import clsx from 'clsx';
-import { FC, TdHTMLAttributes, ThHTMLAttributes } from 'react';
+import { FC, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
 
-const commonCellCss = clsx('border p-1');
+import { DeleteDialog } from "@/components/dialog";
+import { Button } from "@/components/form";
+import { TD, THead } from "@/components/table";
+import { useAppDispatch, useAppSelector } from "@/redux/storeUtils";
+import Page, { PageProps } from "./Page";
+import { usePage } from "@/hooks";
+import { fetchUsers, userListSelector } from "@/redux/usersSlice";
 
-const TH: FC<ThHTMLAttributes<HTMLTableCellElement>> = ({
-  children,
-  className,
-  ...props
-}) => {
-  const css = clsx(className, commonCellCss);
+const UserPage: FC<PageProps> = (props) => {
+  const dispatch = useAppDispatch();
 
-  return (
-    <th {...props} className={css}>
-      {children}
-    </th>
+  const users = useAppSelector(userListSelector);
+  const status = useAppSelector((state) => state.users.status);
+
+  const navigate = useNavigate();
+
+  const { deleteState, dialog } = usePage();
+  const { id: deleteId, deleteHandlerById } = deleteState;
+  const { isOpen: isDialogOpen, close: closeDialog } = dialog;
+
+  const { name = "người dùng" } = props;
+
+  const body = (
+    <>
+      <table className="w-full mt-8">
+        <THead
+          headings={[
+            "#",
+            "UID",
+            "Tên tài khoản",
+            "Email",
+            "Ngày sinh",
+            "Chức vụ",
+            "Phần ban",
+          ]}
+        />
+
+        <tbody>
+          {users.map((user, index) => {
+            const { uid, username, email, birthday, grade, departmentId } =
+              user;
+            return (
+              <tr
+                key={index}
+                className="border rounded cursor-pointer transition-colors hover:bg-neutral-100"
+                onClick={() => {
+                  navigate(`${user.uid}`);
+                }}
+              >
+                <TD>{(index + 1).toString().padStart(2, "0")}</TD>
+                <TD>{uid}</TD>
+                <TD>{username}</TD>
+                <TD>{email}</TD>
+                <TD>{dayjs(birthday).format("YYYY-MM-DD")}</TD>
+                <TD>{grade}</TD>
+                <TD>{departmentId}</TD>
+                <TD>
+                  <div className="flex items-center justify-center">
+                    <Button color="danger" onClick={deleteHandlerById(uid)}>
+                      Xoá
+                    </Button>
+                  </div>
+                </TD>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+
+      <DeleteDialog
+        open={isDialogOpen}
+        onClose={closeDialog}
+        onDelete={() => {}}
+        deleteObject={{
+          id: deleteId,
+          text: "người dùng",
+        }}
+      />
+    </>
   );
-};
 
-const TD: FC<TdHTMLAttributes<HTMLTableCellElement>> = ({
-  children,
-  className,
-  ...props
-}) => {
-  const css = clsx(className, commonCellCss);
+  const pageProps: PageProps = {
+    ...props,
+    name,
+    body,
+  };
 
-  return (
-    <td {...props} className={css}>
-      {children}
-    </td>
-  );
-};
+  useEffect(() => {
+    dispatch(fetchUsers());
+  }, []);
 
-const UserPage: FC = () => {
-  return (
-    <table className="w-full">
-      <thead>
-        <tr className="border rounded">
-          <TH>#</TH>
-          <TH>UID</TH>
-          <TH>Username</TH>
-          <TH>Email</TH>
-          <TH>Grade</TH>
-          <TH>Department</TH>
-          <TH>Actions</TH>
-        </tr>
-      </thead>
-      <tbody>
-        <tr className="border rounded">
-          <TD>01</TD>
-          <TD>00256789-4ec636</TD>
-          <TD>Jorge_Keebler</TD>
-          <TD>Nathanial56@gmail.com</TD>
-          <TD>Manager</TD>
-          <TD>IT</TD>
-        </tr>
-        <tr className="border rounded">
-          <TD>02</TD>
-          <TD>00256789-4ec636</TD>
-          <TD>Jorge_Keebler</TD>
-          <TD>Nathanial56@gmail.com</TD>
-          <TD>Manager</TD>
-          <TD>IT</TD>
-          <TD>
-            <div>
-              <button className="rounded p-1 font-bold text-neutral-100 bg-primary-500">
-                Delete
-              </button>
-            </div>
-          </TD>
-        </tr>
-      </tbody>
-    </table>
-  );
+  console.log("status", status);
+
+  return <Page {...pageProps} />;
 };
 
 export default UserPage;

@@ -7,7 +7,7 @@ export type NavigationSidebarItemProps = {
   text: string;
 };
 
-export const NavigationSidebarItem: FC<NavigationSidebarItemProps> = ({
+const NavigationSidebarItem: FC<NavigationSidebarItemProps> = ({
   text,
   active,
 }) => {
@@ -36,3 +36,5 @@ export const NavigationSidebarItem: FC<NavigationSidebarItemProps> = ({
     </div>
   );
 };
+
+export default NavigationSidebarItem;

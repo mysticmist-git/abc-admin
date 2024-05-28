@@ -1,27 +1,13 @@
-import {
-  Navigate,
-  Route,
-  BrowserRouter as Router,
-  Routes,
-} from 'react-router-dom';
-import { Layout } from './layouts/layout';
-import UserPage from './pages/UserPage';
+import { RouterProvider } from "react-router-dom";
+import store from "@/redux/store";
+import { Provider } from "react-redux";
+import ConfigRouter from "./config/Router";
 
 const App = () => {
   return (
-    <Router>
-      <Layout>
-        <Routes>
-          <Route path="users" element={<UserPage />} />
-          <Route
-            path="posts"
-            element={<p className="text-black">Posts tab</p>}
-          />
-
-          <Route path="/" element={<Navigate to="/users" />} />
-        </Routes>
-      </Layout>
-    </Router>
+    <Provider store={store}>
+      <RouterProvider router={ConfigRouter} />
+    </Provider>
   );
 };
 
