@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -59,6 +59,19 @@ const DetailUserPage: FC<DetailUserPageProps> = (props) => {
       onSubmit={handleSubmit(onSubmit)}
       className="flex flex-col items-start gap-2"
     >
+      <TextField
+        {...register("username", {
+          required: true,
+        })}
+        defaultValue={user?.username}
+        placeholder="Nguyễn Văn A"
+        label="Tên người dùng"
+        aria-invalid={!!errors.username}
+      />
+      {errors.username?.type === "required" && (
+        <ErrorText>Vui lòng nhập tên người dùng</ErrorText>
+      )}
+
       <TextField
         {...register("email", {
           required: true,

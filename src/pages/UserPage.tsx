@@ -1,14 +1,15 @@
+import dayjs from "dayjs";
 import { FC, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import dayjs from "dayjs";
 
 import { DeleteDialog } from "@/components/dialog";
 import { Button } from "@/components/form";
-import { TD, THead } from "@/components/table";
-import { useAppDispatch, useAppSelector } from "@/redux/storeUtils";
-import Page, { PageProps } from "./Page";
+import { LoadingRow, TD, THead } from "@/components/table";
 import { usePage } from "@/hooks";
-import { fetchUsers, userListSelector } from "@/redux/usersSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/storeUtils";
+import { fetchUsers } from "@/redux/usersSlice/fetchUsers";
+import { userListSelector } from "@/redux/usersSlice/usersSlice";
+import Page, { PageProps } from "./Page";
 
 const UserPage: FC<PageProps> = (props) => {
   const dispatch = useAppDispatch();
@@ -40,6 +41,7 @@ const UserPage: FC<PageProps> = (props) => {
         />
 
         <tbody>
+          <LoadingRow loading={status === "loading"} />
           {users.map((user, index) => {
             const { uid, username, email, birthday, grade, departmentId } =
               user;
@@ -92,8 +94,6 @@ const UserPage: FC<PageProps> = (props) => {
   useEffect(() => {
     dispatch(fetchUsers());
   }, []);
-
-  console.log("status", status);
 
   return <Page {...pageProps} />;
 };
