@@ -1,26 +1,8 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { RootState } from "./storeUtils";
-import axios from "axios";
-import { SERVER_URL } from "@/config/api";
-import { ApiCallStatus } from "./common";
+import { createSlice } from "@reduxjs/toolkit";
+import { RootState } from "../storeUtils";
+import { ApiCallStatus } from "../common";
 import { User } from "@/config/erd";
-
-export const fetchUsers = createAsyncThunk("users/fetchUsers", async () => {
-  const url = `${SERVER_URL}/api/v0/User/getAll`;
-
-  console.log("url", url);
-
-  const body = {
-    page: 1,
-    limit: 10,
-  };
-
-  const response = await axios.post(url, {
-    ...body,
-  });
-
-  return response.data;
-});
+import { fetchUsers } from "./fetchUsers";
 
 type UserSliceState = {
   list: User[];
