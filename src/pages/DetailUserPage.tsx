@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { FC } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
@@ -14,16 +15,16 @@ import {
 } from "@/components/form";
 import { TH } from "@/components/table";
 import { ErrorText } from "@/components/texts";
+
 import { UserRequestDTO } from "@/config/dto/request";
 import { GradeArray, StatusTypeArray } from "@/config/erd";
+import { DEFAULT_PERMISSIONS } from "@/config/permission";
 import { RouteKey } from "@/config/route";
+import { useAppSelector } from "@/redux/storeUtils";
 import { route } from "@/utils/route";
 import { capitalized, getSubmitText } from "@/utils/text";
 import DetailPage, { DetailPageProps } from "./DetailPage";
 import { CreateMode } from "./common";
-import { useAppSelector } from "@/redux/storeUtils";
-import dayjs from "dayjs";
-import { DEFAULT_PERMISSIONS } from "@/config/permission";
 
 type DetailUserPageProps = DetailPageProps & CreateMode;
 

@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { FC } from "react";
 
-import { departmentsSelector } from "@/redux/departmentsSlice";
+import { departmentsSelector } from "@/redux/departmentsSlice/departmentsSlice";
 
 import { DeleteDialog } from "@/components/dialog";
 import { Button } from "@/components/form";

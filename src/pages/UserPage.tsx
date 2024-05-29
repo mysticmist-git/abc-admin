@@ -13,12 +13,17 @@ import { Button } from "@/components/form";
 import { LoadingRow, TD, THead } from "@/components/table";
 
 import Page, { PageProps } from "./Page";
+import { fetchDepartments } from "@/redux/departmentsSlice/fetchDepartments";
+import { getGradeText } from "@/utils/text";
 
 const UserPage: FC<PageProps> = (props) => {
   const dispatch = useAppDispatch();
 
+  const usersStatus = useAppSelector((state) => state.users.status);
+  const departmentsStatus = useAppSelector((state) => state.departments.status);
+
   const users = useAppSelector(userListSelector);
-  const status = useAppSelector((state) => state.users.status);
+  const departments = useAppSelector((state) => state.departments.list);
 
   const navigate = useNavigate();
 
@@ -28,7 +33,7 @@ const UserPage: FC<PageProps> = (props) => {
 
   const { name = "người dùng" } = props;
 
-  const loading = isLoading(status);
+  const loading = isLoading(usersStatus);
 
   const body = (
     <>
@@ -51,6 +56,12 @@ const UserPage: FC<PageProps> = (props) => {
             users.map((user, index) => {
               const { uid, username, email, birthday, grade, departmentId } =
                 user;
+
+              const gradeName = getGradeText(grade);
+              const departmentName = departments.find(
+                (department) => departmentId === department.id,
+              )?.name;
+
               return (
                 <tr
                   key={index}
@@ -64,8 +75,8 @@ const UserPage: FC<PageProps> = (props) => {
                   <TD>{username}</TD>
                   <TD>{email}</TD>
                   <TD>{dayjs(birthday).format("YYYY-MM-DD")}</TD>
-                  <TD>{grade}</TD>
-                  <TD>{departmentId}</TD>
+                  <TD>{gradeName}</TD>
+                  <TD>{departmentName}</TD>
                   <TD>
                     <div className="flex items-center justify-center">
                       <Button color="danger" onClick={deleteHandlerById(uid)}>
@@ -98,9 +109,13 @@ const UserPage: FC<PageProps> = (props) => {
   };
 
   useEffect(() => {
-    if (status === "idle") dispatch(fetchUsers());
+    if (usersStatus === "idle") dispatch(fetchUsers());
+    if (departmentsStatus === "idle") dispatch(fetchDepartments());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  console.log(departments);
+  console.log(users);
 
   return <Page {...pageProps} />;
 };
