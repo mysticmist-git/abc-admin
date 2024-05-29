@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -20,11 +20,20 @@ import { UserRequestDTO } from "@/config/dto/request";
 import { GradeArray, StatusTypeArray } from "@/config/erd";
 import { DEFAULT_PERMISSIONS } from "@/config/permission";
 import { RouteKey } from "@/config/route";
-import { useAppSelector } from "@/redux/storeUtils";
+import { useAppDispatch, useAppSelector } from "@/redux/storeUtils";
 import { route } from "@/utils/route";
-import { capitalized, getSubmitText } from "@/utils/text";
+import {
+  capitalized,
+  getDepartmentNameByIdFrom,
+  getGradeText,
+  getStatusTypeText,
+  getSubmitText,
+} from "@/utils/text";
 import DetailPage, { DetailPageProps } from "./DetailPage";
 import { CreateMode } from "./common";
+import { fetchDepartments } from "@/redux/departmentsSlice/fetchDepartments";
+import axios from "axios";
+import { SERVER_URL } from "@/config/api";
 
 type DetailUserPageProps = DetailPageProps & CreateMode;
 
@@ -32,9 +41,14 @@ const DetailUserPage: FC<DetailUserPageProps> = (props) => {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  const dispatch = useAppDispatch();
+
   const user = useAppSelector((state) =>
     state.users.list.find((user) => user.uid === id),
   );
+
+  const departmentsStatus = useAppSelector((state) => state.departments.status);
+  const departments = useAppSelector((state) => state.departments.list);
 
   const {
     handleSubmit,
@@ -51,8 +65,21 @@ const DetailUserPage: FC<DetailUserPageProps> = (props) => {
 
   const handleNavigateBack = () => navigate(route(RouteKey.UserPage));
 
-  const onSubmit: SubmitHandler<UserRequestDTO> = (user) => {
+  const onSubmit: SubmitHandler<UserRequestDTO> = async (user) => {
     console.log(user);
+
+    const url = `${SERVER_URL}/api/v0/User`;
+    try {
+      const response = await axios.post(url, {
+        ...user,
+        avatar: "avatar",
+        birthday: new Date(user.birthday).getTime(),
+      });
+
+      console.log("response", response);
+    } catch (error) {
+      console.log("error", error);
+    }
   };
 
   const body = (
@@ -132,12 +159,16 @@ const DetailUserPage: FC<DetailUserPageProps> = (props) => {
         {...register("grade")}
         label="Chức vụ"
         options={GradeArray}
+        optionLabelConverter={getGradeText}
         defaultValue={user?.grade}
       />
       <Select
         {...register("departmentId")}
         label="Phòng ban"
-        options={[1, 2, 3]}
+        options={departments.map((department) => department.id)}
+        optionLabelConverter={(id) =>
+          getDepartmentNameByIdFrom(departments)(id)
+        }
         defaultValue={user?.departmentId}
       />
 
@@ -165,6 +196,7 @@ const DetailUserPage: FC<DetailUserPageProps> = (props) => {
         {...register("status")}
         label="Trạng thái"
         options={StatusTypeArray}
+        optionLabelConverter={getStatusTypeText}
         defaultValue={user?.status}
       />
 
@@ -178,6 +210,12 @@ const DetailUserPage: FC<DetailUserPageProps> = (props) => {
     body,
     handleNavigateBack,
   };
+
+  useEffect(() => {
+    if (departmentsStatus === "idle") {
+      dispatch(fetchDepartments());
+    }
+  }, []);
 
   return <DetailPage {...detailPageProps} />;
 };
