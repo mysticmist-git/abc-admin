@@ -1,4 +1,4 @@
-import { Grade } from "@/config/erd";
+import { Department, Grade, StatusType } from "@/config/erd";
 
 export const capitalized = (text: string) => {
   return text.charAt(0).toUpperCase() + text.slice(1);
@@ -19,3 +19,17 @@ export const gradeTextMap: Record<Grade, string> = {
 };
 
 export const getGradeText = (grade: Grade): string => gradeTextMap[grade];
+
+export const statusTypeTextMap: Record<StatusType, string> = {
+  active: "Hoạt động",
+  inactive: "Khoá",
+  create: "Create",
+};
+
+export const getStatusTypeText = (statusType: StatusType): string =>
+  statusTypeTextMap[statusType];
+
+export const getDepartmentNameByIdFrom =
+  (departments: Department[]) => (id: number) =>
+    departments.find((department) => department.id === id)?.name ??
+    "Phòng ban không tồn tại";
