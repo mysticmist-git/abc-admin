@@ -48,7 +48,7 @@ export const postRoutes = {
 export const postTypeRoutes = {
   [RouteKey.PostTypePage]: "/postTypes",
   [RouteKey.DetailPostTypePage]: "/postTypes/:id",
-  [RouteKey.NewPostPage]: "/postTypes/new",
+  [RouteKey.NewPostTypePage]: "/postTypes/new",
 };
 
 export const eventTypesRoutes = {
@@ -64,7 +64,6 @@ export const departmentRoutes = {
 };
 
 export const routes = {
-  ...commonRoute,
   ...authRoutes,
   ...userRoutes,
   ...postRoutes,
@@ -72,4 +71,5 @@ export const routes = {
   ...departmentRoutes,
   ...eventTypesRoutes,
   ...departmentRoutes,
+  ...commonRoute,
 };

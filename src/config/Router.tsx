@@ -90,6 +90,10 @@ const ConfigRouter = createBrowserRouter([
 
       // fallback
       {
+        path: route(RouteKey.Index),
+        element: <Navigate to={route(RouteKey.UserPage)} />,
+      },
+      {
         path: route(RouteKey.All),
         element: <Navigate to={route(RouteKey.UserPage)} />,
       },
