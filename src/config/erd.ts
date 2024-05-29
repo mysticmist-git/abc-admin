@@ -1,60 +1,21 @@
-export enum StatusType {
-  Create = "Create",
-  Active = "Hoạt động",
-  Inactive = "Ngưng hoạt động",
-}
+export type StatusType = "create" | "active" | "inactive";
+export const StatusTypeArray: StatusType[] = ["create", "active", "inactive"];
 
-export const StatusTypeArray = [
-  StatusType.Create,
-  StatusType.Active,
-  StatusType.Inactive,
+export type Action = "create" | "read" | "update" | "delete";
+export const ActionArray: Action[] = ["create", "read", "update", "delete"];
+
+export type Grade = "employee" | "manager" | "directory" | "admin";
+export const GradeArray: Grade[] = [
+  "employee",
+  "manager",
+  "directory",
+  "admin",
 ];
 
-export enum Action {
-  Create,
-  Read,
-  Update,
-  Delete,
-}
+export type MetricType = "like" | "view" | "comment";
 
-export const ActionArray = [
-  Action.Create,
-  Action.Read,
-  Action.Update,
-  Action.Delete,
-];
-
-export enum Grade {
-  Employee = "Nhân viên",
-  Manager = "Quản lý",
-  Director = "Giám đốc",
-  Admin = "Quản trị viên",
-}
-
-export const GradeArray = [
-  Grade.Manager,
-  Grade.Director,
-  Grade.Admin,
-  Grade.Employee,
-];
-
-export enum MetricType {
-  Like,
-  View,
-  Comment,
-}
-
-export enum ApprovalStatus {
-  Pending,
-  Approve,
-  Cancel,
-}
-
-export const ApprovalStatusArray = [
-  ApprovalStatus.Pending,
-  ApprovalStatus.Approve,
-  ApprovalStatus.Cancel,
-];
+export type ApprovalStatus = "pending" | "approve" | "cancel";
+export const ApprovalStatusArray = ["pending", "approve", "cancel"];
 
 export type Request = {
   id: number;
