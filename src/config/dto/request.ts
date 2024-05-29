@@ -1,4 +1,4 @@
-import { ApprovalStatus, StatusType, Grade, Action } from '../erd';
+import { ApprovalStatus, StatusType, Grade, Action } from "../erd";
 
 export type RequestRequestDTO = {
   id: number;
@@ -19,6 +19,7 @@ export type RequestRequestDTO = {
 
 export type UserRequestDTO = {
   uid: string;
+  username: string;
   departmentId: number;
   grade: Grade;
   //
