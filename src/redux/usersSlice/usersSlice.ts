@@ -1,15 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { RootState } from "../storeUtils";
-import { ApiCallStatus } from "../common";
+
 import { User } from "@/config/erd";
+import { CommonSliceState } from "../common";
+import { RootState } from "../storeUtils";
 import { fetchUsers } from "./fetchUsers";
 
-type UserSliceState = {
-  list: User[];
-  status: ApiCallStatus;
-};
-
-const initialState: UserSliceState = {
+const initialState: CommonSliceState<User> = {
   list: [],
   status: "idle",
 };
