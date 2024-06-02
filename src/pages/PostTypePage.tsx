@@ -1,16 +1,24 @@
 import { useNavigate } from "react-router-dom";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 
 import { DeleteDialog } from "@/components/dialog";
 import { Button } from "@/components/form";
-import { TD, THead } from "@/components/table";
-import { useAppSelector } from "@/redux/storeUtils";
+import { LoadingRow, TD, THead } from "@/components/table";
+import { useAppDispatch, useAppSelector } from "@/redux/storeUtils";
 import Page, { PageProps } from "./Page";
 import { usePage } from "@/hooks";
-import { postTypeListSelector } from "@/redux/postTypeSlice";
+import {
+  postTypesSelector,
+  postTypesStatusSelector,
+} from "@/redux/postTypesSlice/postTypeSlice";
+import { fetchPostTypes } from "@/redux/postTypesSlice/fetchPostTypes";
+import { isLoading } from "@/utils/ui";
 
 const PostTypePage: FC<PageProps> = (props) => {
-  const postTypes = useAppSelector(postTypeListSelector);
+  const status = useAppSelector(postTypesStatusSelector);
+  const rows = useAppSelector(postTypesSelector);
+
+  const dispatch = useAppDispatch();
 
   const navigate = useNavigate();
 
@@ -20,13 +28,16 @@ const PostTypePage: FC<PageProps> = (props) => {
 
   const name = "loại bài đăng";
 
+  const loading = isLoading(status);
+
   const PageBody = (
     <>
       <table className="w-full mt-8">
         <THead headings={["#", "Id", "Tên loại", "Mô tả", "Trạng thái"]} />
 
         <tbody>
-          {postTypes.map((postType, index) => {
+          {loading && <LoadingRow />}
+          {rows.map((postType, index) => {
             const { id, name, description, status } = postType;
             return (
               <tr
@@ -65,6 +76,13 @@ const PostTypePage: FC<PageProps> = (props) => {
       />
     </>
   );
+
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(fetchPostTypes());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return <Page {...props} name={name} body={PageBody} />;
 };

@@ -15,25 +15,36 @@ import {
   WithLabel,
 } from "@/components/form";
 import { TH } from "@/components/table";
-import { capitalized, getSubmitText } from "@/utils/text";
+import {
+  capitalized,
+  getGradeText,
+  getStatusTypeText,
+  getSubmitText,
+} from "@/utils/text";
 import { useNavigate, useParams } from "react-router-dom";
 import DetailPage, { DetailPageProps } from "./DetailPage";
 import { CreateMode } from "./common";
 import { useAppSelector } from "@/redux/storeUtils";
+import { apiUrl } from "@/utils/api";
+import axios from "axios";
+import { SUCCESS_STATUS_CODE } from "@/config/api";
 
 type DetailPostTypePageProps = DetailPageProps & CreateMode;
 
 const DetailPostTypePage: FC<DetailPostTypePageProps> = (props) => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { handleSubmit, register, control } = useForm<PostTypeRequestDTO>();
+  const { handleSubmit, register, control, watch } =
+    useForm<PostTypeRequestDTO>();
 
-  const { createMode = false, name = "bài đăng", ...rest } = props;
+  watch((values) => console.log(values));
+
+  const { createMode = false, name = "loại bài đăng", ...rest } = props;
 
   const postType = useAppSelector((state) =>
     id
       ? state.postTypes.list.find((postType) => postType.id === parseInt(id))
-      : null,
+      : null
   );
   const capitalizedName = capitalized(name);
 
@@ -41,8 +52,38 @@ const DetailPostTypePage: FC<DetailPostTypePageProps> = (props) => {
 
   const handleNavigateBack = () => navigate(route(RouteKey.PostPage));
 
-  const onSubmit: SubmitHandler<PostTypeRequestDTO> = (post) => {
-    console.log(post);
+  const onSubmit: SubmitHandler<PostTypeRequestDTO> = async (post) => {
+    if (createMode) {
+      const url = apiUrl("/PostType");
+
+      const data = [
+        {
+          name: "string",
+          description: "string",
+          permissionIdToCRUDPost: ["employee"],
+          permissionIdToCRUD: ["employee"],
+          status: "create",
+        },
+      ];
+
+      console.log(data);
+
+      try {
+        const response = await axios.post(url, data, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.status === SUCCESS_STATUS_CODE) {
+          console.log("ok");
+          return;
+        }
+        console.log("no ok");
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 
   const body = (
@@ -54,8 +95,8 @@ const DetailPostTypePage: FC<DetailPostTypePageProps> = (props) => {
         {...register("name", {
           required: true,
         })}
-        placeholder="Tên bài đăng"
-        label="Tên bài loại đăng"
+        placeholder="Tên loại bài đăng"
+        label="Tên loại bài đăng"
         defaultValue={postType?.name}
       />
       <WithLabel label="Mô tả">
@@ -75,7 +116,7 @@ const DetailPostTypePage: FC<DetailPostTypePageProps> = (props) => {
             <tr>
               <TH>Quyền</TH>
               {GradeArray.map((value, index) => (
-                <TH key={index}>{value}</TH>
+                <TH key={index}>{getGradeText(value)}</TH>
               ))}
             </tr>
           </thead>
@@ -115,6 +156,7 @@ const DetailPostTypePage: FC<DetailPostTypePageProps> = (props) => {
         {...register("status")}
         label="Trạng thái"
         options={StatusTypeArray}
+        optionLabelConverter={getStatusTypeText}
         defaultValue={postType?.status}
       />
 

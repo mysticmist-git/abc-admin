@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 import { Department } from "@/config/erd";
-import { departments } from "@/mock/departments";
 import { CommonSliceState } from "../common";
 import { RootState } from "../storeUtils";
 import { fetchDepartments } from "./fetchDepartments";
@@ -32,6 +31,8 @@ const slice = createSlice({
 // Action creators are generted for each case reducer function
 export const {} = slice.actions;
 
+export const departmentsStatusSelector = (state: RootState) =>
+  state.departments.status;
 export const departmentsSelector = (state: RootState) => state.departments.list;
 
 export default slice.reducer;

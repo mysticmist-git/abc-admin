@@ -139,7 +139,7 @@ export type File = {
   size: number;
 };
 
-export type ResouceType = {
+export type ResourceType = {
   id: number;
   name: string;
   description: string;

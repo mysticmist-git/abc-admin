@@ -31,6 +31,7 @@ const slice = createSlice({
 // Action creators are generted for each case reducer function
 export const _ = slice.actions;
 
+export const userListStatusSelector = (state: RootState) => state.users.status;
 export const userListSelector = (state: RootState) => state.users.list;
 
 export default slice.reducer;

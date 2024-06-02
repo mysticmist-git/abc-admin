@@ -1,9 +1,9 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { posts } from '@/mock/posts';
-import { RootState } from './storeUtils';
+import { createSlice } from "@reduxjs/toolkit";
+import { posts } from "@/mock/posts";
+import { RootState } from "../storeUtils";
 
 const slice = createSlice({
-  name: 'posts',
+  name: "posts",
   initialState: {
     list: posts,
   },

@@ -22,6 +22,22 @@ export enum RouteKey {
   EventTypePage,
   DetailEventTypePage,
   NewEventTypePage,
+
+  ResourceTypePage,
+  DetailResourceTypePage,
+  NewResourceTypePage,
+
+  ResourcePage,
+  DetailResourcePage,
+  NewResourcePage,
+
+  ResourceUsingPage,
+  DetailResourceUsingPage,
+  NewResourceUsingPage,
+
+  FilePage,
+  DetailFilePage,
+  NewFilePage,
 }
 
 export const commonRoute = {
@@ -63,6 +79,30 @@ export const departmentRoutes = {
   [RouteKey.NewDepartmentPage]: "/departments/new",
 };
 
+export const resourceTypeRoutes = {
+  [RouteKey.ResourceTypePage]: "/resourceTypes",
+  [RouteKey.DetailResourceTypePage]: "/resourceTypes/:id",
+  [RouteKey.NewResourceTypePage]: "/resourceTypes/new",
+};
+
+export const resources = {
+  [RouteKey.ResourcePage]: "/resources",
+  [RouteKey.DetailResourcePage]: "/resources/:id",
+  [RouteKey.NewResourcePage]: "/resources/new",
+};
+
+export const resourceUsings = {
+  [RouteKey.ResourceUsingPage]: "/resourceUsings",
+  [RouteKey.DetailResourceUsingPage]: "/resourceUsings/:id",
+  [RouteKey.NewResourceUsingPage]: "/resourceUsings/new",
+};
+
+export const files = {
+  [RouteKey.FilePage]: "/resourceUsings",
+  [RouteKey.DetailFilePage]: "/resourceUsings/:id",
+  [RouteKey.NewFilePage]: "/resourceUsings/new",
+};
+
 export const routes = {
   ...authRoutes,
   ...userRoutes,
@@ -72,4 +112,8 @@ export const routes = {
   ...eventTypesRoutes,
   ...departmentRoutes,
   ...commonRoute,
+  ...resourceTypeRoutes,
+  ...resources,
+  ...resourceUsings,
+  ...files,
 };

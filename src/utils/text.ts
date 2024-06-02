@@ -8,7 +8,7 @@ export const newRoute = (baseRoute: string) => `${baseRoute}/new`;
 
 export const getSubmitText = (
   createMode: boolean = false,
-  resourceText: string,
+  resourceText: string
 ) => (createMode ? `Tạo ${resourceText}` : `Cập nhật ${resourceText}`);
 
 export const gradeTextMap: Record<Grade, string> = {

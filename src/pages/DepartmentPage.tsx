@@ -1,30 +1,41 @@
 import { useNavigate } from "react-router-dom";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 
-import { departmentsSelector } from "@/redux/departmentsSlice/departmentsSlice";
+import {
+  departmentsSelector,
+  departmentsStatusSelector,
+} from "@/redux/departmentsSlice/departmentsSlice";
 
 import { DeleteDialog } from "@/components/dialog";
 import { Button } from "@/components/form";
-import { TD, THead } from "@/components/table";
-import { useAppSelector } from "@/redux/storeUtils";
+import { LoadingRow, TD, THead } from "@/components/table";
+import { useAppDispatch, useAppSelector } from "@/redux/storeUtils";
 import Page, { PageProps } from "./Page";
 import { usePage } from "@/hooks";
+import { fetchDepartments } from "@/redux/departmentsSlice/fetchDepartments";
+import { isLoading } from "@/utils/ui";
 
 const DepartmentPage: FC<PageProps> = (props) => {
   const navigate = useNavigate();
-  const departments = useAppSelector(departmentsSelector);
+  const dispatch = useAppDispatch();
+
+  const status = useAppSelector(departmentsStatusSelector);
+  const rows = useAppSelector(departmentsSelector);
 
   const { deleteState, dialog } = usePage();
   const { id: deleteId, deleteHandlerById } = deleteState;
   const { isOpen: isDialogOpen, close: closeDialog } = dialog;
 
-  const PageBody = (
+  const loading = isLoading(status);
+
+  const body = (
     <>
       <table className="w-full mt-8">
         <THead headings={["#", "ID", "Giám đốc", "Tên", "Trạng thái"]} />
 
         <tbody>
-          {departments.map((department, index) => {
+          {loading && <LoadingRow />}
+          {rows.map((department, index) => {
             const { id, directorUid, name, status } = department;
             return (
               <tr
@@ -64,7 +75,12 @@ const DepartmentPage: FC<PageProps> = (props) => {
     </>
   );
 
-  return <Page {...props} body={PageBody} />;
+  useEffect(() => {
+    if (status === "idle") dispatch(fetchDepartments());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return <Page {...props} body={body} />;
 };
 
 export default DepartmentPage;

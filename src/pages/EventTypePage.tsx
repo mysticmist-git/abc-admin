@@ -1,18 +1,28 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useAppSelector } from "@/redux/storeUtils";
-import { eventTypeListSelector } from "@/redux/eventTypesSlice";
+import {
+  eventTypeListSelector,
+  eventTypesStatusSelector,
+} from "@/redux/eventTypesSlice/eventTypesSlice";
+import { fetchEventTypes } from "@/redux/eventTypesSlice/fetchEventTypes";
+import { useAppDispatch, useAppSelector } from "@/redux/storeUtils";
 
 import { usePage } from "@/hooks";
 
 import { DeleteDialog } from "@/components/dialog";
 import { Button } from "@/components/form";
-import { TD, THead } from "@/components/table";
+import { LoadingRow, TD, THead } from "@/components/table";
+
 import Page, { PageProps } from "./Page";
+import { getStatusTypeText } from "@/utils/text";
+import { isLoading } from "@/utils/ui";
 
 const EventTypePage: FC<PageProps> = (props) => {
-  const eventTypes = useAppSelector(eventTypeListSelector);
+  const status = useAppSelector(eventTypesStatusSelector);
+  const rows = useAppSelector(eventTypeListSelector);
+
+  const dispatch = useAppDispatch();
 
   const navigate = useNavigate();
 
@@ -20,14 +30,17 @@ const EventTypePage: FC<PageProps> = (props) => {
   const { id: deleteId, deleteHandlerById } = deleteState;
   const { isOpen: isDialogOpen, close: closeDialog } = dialog;
 
-  const PageBody = (
+  const loading = isLoading(status);
+
+  const body = (
     <>
       <table className="w-full mt-8">
         <THead headings={["#", "Id", "Tên loại", "Mô tả", "Trạng thái"]} />
 
         <tbody>
-          {eventTypes.map((postType, index) => {
-            const { id, name, description, status } = postType;
+          {loading && <LoadingRow />}
+          {rows.map((eventType, index) => {
+            const { id, name, description, status } = eventType;
             return (
               <tr
                 key={index}
@@ -40,7 +53,7 @@ const EventTypePage: FC<PageProps> = (props) => {
                 <TD>{id}</TD>
                 <TD>{name}</TD>
                 <TD>{description}</TD>
-                <TD>{status}</TD>
+                <TD>{getStatusTypeText(status)}</TD>
                 <TD>
                   <div className="flex items-center justify-center">
                     <Button color="danger" onClick={deleteHandlerById(id)}>
@@ -66,7 +79,12 @@ const EventTypePage: FC<PageProps> = (props) => {
     </>
   );
 
-  return <Page {...props} body={PageBody} />;
+  useEffect(() => {
+    if (status === "idle") dispatch(fetchEventTypes());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return <Page {...props} body={body} />;
 };
 
 export default EventTypePage;

@@ -7,8 +7,8 @@ import { Button } from "@/components/form";
 import { TD, THead } from "@/components/table";
 import { useAppSelector } from "@/redux/storeUtils";
 import Page, { PageProps } from "./Page";
-import { postListSelector } from "@/redux/postsSlice";
 import { usePage } from "@/hooks";
+import { postListSelector } from "@/redux/postsSlice/postsSlice";
 
 const PostPage: FC<PageProps> = (props) => {
   const posts = useAppSelector(postListSelector);

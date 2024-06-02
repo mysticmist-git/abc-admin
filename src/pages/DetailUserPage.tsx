@@ -32,8 +32,7 @@ import {
 import DetailPage, { DetailPageProps } from "./DetailPage";
 import { CreateMode } from "./common";
 import { fetchDepartments } from "@/redux/departmentsSlice/fetchDepartments";
-import axios from "axios";
-import { SERVER_URL } from "@/config/api";
+import { postUser } from "@/redux/usersSlice/postUser";
 
 type DetailUserPageProps = DetailPageProps & CreateMode;
 
@@ -44,11 +43,13 @@ const DetailUserPage: FC<DetailUserPageProps> = (props) => {
   const dispatch = useAppDispatch();
 
   const user = useAppSelector((state) =>
-    state.users.list.find((user) => user.uid === id),
+    state.users.list.find((user) => user.uid === id)
   );
 
-  const departmentsStatus = useAppSelector((state) => state.departments.status);
-  const departments = useAppSelector((state) => state.departments.list);
+  const status = useAppSelector((state) => state.departments.status);
+  const rows = useAppSelector((state) => state.departments.list);
+
+  const { createMode = false, name = "người dùng", ...rest } = props;
 
   const {
     handleSubmit,
@@ -57,8 +58,6 @@ const DetailUserPage: FC<DetailUserPageProps> = (props) => {
     formState: { errors },
   } = useForm<UserRequestDTO>();
 
-  const { createMode = false, name = "người dùng", ...rest } = props;
-
   const capitalizedName = capitalized(name);
 
   const submitText = getSubmitText(createMode, capitalizedName);
@@ -66,19 +65,14 @@ const DetailUserPage: FC<DetailUserPageProps> = (props) => {
   const handleNavigateBack = () => navigate(route(RouteKey.UserPage));
 
   const onSubmit: SubmitHandler<UserRequestDTO> = async (user) => {
-    console.log(user);
-
-    const url = `${SERVER_URL}/api/v0/User`;
-    try {
-      const response = await axios.post(url, {
+    if (createMode) {
+      console.log({
         ...user,
-        avatar: "avatar",
-        birthday: new Date(user.birthday).getTime(),
+        avatar: "test-avatar",
+        birthday: dayjs(user.birthday).valueOf(),
       });
-
-      console.log("response", response);
-    } catch (error) {
-      console.log("error", error);
+      dispatch(postUser(user));
+      return;
     }
   };
 
@@ -134,7 +128,7 @@ const DetailUserPage: FC<DetailUserPageProps> = (props) => {
         name="avatar"
         control={control}
         render={({ field }) => {
-          const avatarUrl = field.value
+          const avatarUrl = field.value?.length
             ? URL.createObjectURL(field.value[0])
             : avatar;
 
@@ -160,16 +154,14 @@ const DetailUserPage: FC<DetailUserPageProps> = (props) => {
         label="Chức vụ"
         options={GradeArray}
         optionLabelConverter={getGradeText}
-        defaultValue={user?.grade}
+        defaultValue={user?.grade || GradeArray[0]}
       />
       <Select
         {...register("departmentId")}
         label="Phòng ban"
-        options={departments.map((department) => department.id)}
-        optionLabelConverter={(id) =>
-          getDepartmentNameByIdFrom(departments)(id)
-        }
-        defaultValue={user?.departmentId}
+        options={rows.map((department) => department.id)}
+        optionLabelConverter={getDepartmentNameByIdFrom(rows)}
+        defaultValue={user?.departmentId || (rows?.length && rows[0].id)}
       />
 
       <WithLabel label="Quyền Xem / Tạo / Xoá / Sửa">
@@ -178,7 +170,7 @@ const DetailUserPage: FC<DetailUserPageProps> = (props) => {
             <tr>
               <TH>Quyền</TH>
               {GradeArray.map((value, index) => (
-                <TH key={index}>{value}</TH>
+                <TH key={index}>{getGradeText(value)}</TH>
               ))}
             </tr>
           </thead>
@@ -212,10 +204,13 @@ const DetailUserPage: FC<DetailUserPageProps> = (props) => {
   };
 
   useEffect(() => {
-    if (departmentsStatus === "idle") {
+    if (status === "idle") {
       dispatch(fetchDepartments());
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  if (status === "loading") return <p>Loading</p>;
 
   return <DetailPage {...detailPageProps} />;
 };
