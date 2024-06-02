@@ -98,9 +98,9 @@ export const resourceUsings = {
 };
 
 export const files = {
-  [RouteKey.FilePage]: "/resourceUsings",
-  [RouteKey.DetailFilePage]: "/resourceUsings/:id",
-  [RouteKey.NewFilePage]: "/resourceUsings/new",
+  [RouteKey.FilePage]: "/files",
+  [RouteKey.DetailFilePage]: "/files/:id",
+  [RouteKey.NewFilePage]: "/files/new",
 };
 
 export const routes = {

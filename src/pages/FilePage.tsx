@@ -1,14 +1,13 @@
-import dayjs from "dayjs";
 import { FC, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 
 import { usePage } from "@/hooks";
-import { fetchDepartments } from "@/redux/departmentsSlice/fetchDepartments";
+import { fetchFiles } from "@/redux/filesSlice/fetchFiles";
+import {
+  filesSelector,
+  filesStatusSelector,
+} from "@/redux/filesSlice/filesSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/storeUtils";
-import { fetchUsers } from "@/redux/usersSlice/fetchUsers";
-import { usersSelector } from "@/redux/usersSlice/usersSlice";
 
-import { getGradeText } from "@/utils/text";
 import { isLoading } from "@/utils/ui";
 
 import { DeleteDialog } from "@/components/dialog";
@@ -20,21 +19,16 @@ import Page, { PageProps } from "./Page";
 const FilePage: FC<PageProps> = (props) => {
   const dispatch = useAppDispatch();
 
-  const usersStatus = useAppSelector((state) => state.users.status);
-  const departmentsStatus = useAppSelector((state) => state.departments.status);
-
-  const users = useAppSelector(usersSelector);
-  const departments = useAppSelector((state) => state.departments.list);
-
-  const navigate = useNavigate();
+  const status = useAppSelector(filesStatusSelector);
+  const rows = useAppSelector(filesSelector);
 
   const { deleteState, dialog } = usePage();
-  const { id: deleteId, deleteHandlerById } = deleteState;
+  const { id: deleteId } = deleteState;
   const { isOpen: isDialogOpen, close: closeDialog } = dialog;
 
   const { name = "tệp" } = props;
 
-  const loading = isLoading(usersStatus);
+  const loading = isLoading(status);
 
   const body = (
     <>
@@ -54,35 +48,27 @@ const FilePage: FC<PageProps> = (props) => {
         <tbody>
           {loading && <LoadingRow />}
           {!loading &&
-            users.map((user, index) => {
-              const { uid, username, email, birthday, grade, departmentId } =
-                user;
-
-              const gradeName = getGradeText(grade);
-              const departmentName = departments.find(
-                (department) => departmentId === department.id
-              )?.name;
+            rows.map((file, index) => {
+              const {
+                url,
+                name,
+                type, // png | mp4 | pdf | ..= .
+                size,
+              } = file;
 
               return (
                 <tr
                   key={index}
                   className="border rounded cursor-pointer transition-colors hover:bg-neutral-100"
-                  onClick={() => {
-                    navigate(`${user.uid}`);
-                  }}
                 >
                   <TD>{(index + 1).toString().padStart(2, "0")}</TD>
-                  <TD>{uid}</TD>
-                  <TD>{username}</TD>
-                  <TD>{email}</TD>
-                  <TD>{dayjs(birthday).format("YYYY-MM-DD")}</TD>
-                  <TD>{gradeName}</TD>
-                  <TD>{departmentName}</TD>
+                  <TD>{url}</TD>
+                  <TD>{name}</TD>
+                  <TD>{type}</TD>
+                  <TD>{size}</TD>
                   <TD>
                     <div className="flex items-center justify-center">
-                      <Button color="danger" onClick={deleteHandlerById(uid)}>
-                        Xoá
-                      </Button>
+                      <Button color="danger">Xoá</Button>
                     </div>
                   </TD>
                 </tr>
@@ -110,8 +96,7 @@ const FilePage: FC<PageProps> = (props) => {
   };
 
   useEffect(() => {
-    if (usersStatus === "idle") dispatch(fetchUsers());
-    if (departmentsStatus === "idle") dispatch(fetchDepartments());
+    if (status === "idle") dispatch(fetchFiles());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

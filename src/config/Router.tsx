@@ -17,6 +17,7 @@ import { RouteKey } from "./route";
 import ResourceTypePage from "@/pages/ResourceTypePage";
 import ResourcePage from "@/pages/ResourcePage";
 import ResourceUsingPage from "@/pages/ResourceUsingPage";
+import FilePage from "@/pages/FilePage";
 
 const ConfigRouter = createBrowserRouter([
   {
@@ -128,12 +129,7 @@ const ConfigRouter = createBrowserRouter([
 
       {
         path: route(RouteKey.FilePage),
-        element: (
-          <EventTypePage
-            name="loại sự kiện"
-            route={route(RouteKey.EventTypePage)}
-          />
-        ),
+        element: <FilePage name="tệp" route={route(RouteKey.FilePage)} />,
       },
 
       // fallback

@@ -8,6 +8,7 @@ import eventTypesReducer from "./eventTypesSlice/eventTypesSlice";
 import resourceTypesReducer from "./resourceTypesSlice/resourceTypesSlice";
 import resourcesReducer from "./resourcesSlice/resourcesSlice";
 import resourceUsingsReducer from "./resourceUsingsSlice/resourceUsingsSlice";
+import filesReducer from "./filesSlice/filesSlice";
 
 export default configureStore({
   reducer: {
@@ -19,5 +20,6 @@ export default configureStore({
     resourceTypes: resourceTypesReducer,
     resources: resourcesReducer,
     resourceUsings: resourceUsingsReducer,
+    files: filesReducer,
   },
 });
