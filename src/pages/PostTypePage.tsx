@@ -30,7 +30,7 @@ const PostTypePage: FC<PageProps> = (props) => {
 
   const loading = isLoading(status);
 
-  const PageBody = (
+  const body = (
     <>
       <table className="w-full mt-8">
         <THead headings={["#", "Id", "Tên loại", "Mô tả", "Trạng thái"]} />
@@ -84,7 +84,7 @@ const PostTypePage: FC<PageProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <Page {...props} name={name} body={PageBody} />;
+  return <Page {...props} name={name} body={body} />;
 };
 
 export default PostTypePage;

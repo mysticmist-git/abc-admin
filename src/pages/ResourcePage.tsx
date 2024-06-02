@@ -1,30 +1,29 @@
-import dayjs from "dayjs";
 import { FC, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { usePage } from "@/hooks";
-import { fetchDepartments } from "@/redux/departmentsSlice/fetchDepartments";
-import { useAppDispatch, useAppSelector } from "@/redux/storeUtils";
-import { fetchUsers } from "@/redux/usersSlice/fetchUsers";
-import { usersSelector } from "@/redux/usersSlice/usersSlice";
 
-import { getGradeText } from "@/utils/text";
+import {
+  resourcesSelector,
+  resourcesStatusSelector,
+} from "@/redux/resourcesSlice/resourcesSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/storeUtils";
+
+import { getStatusTypeText } from "@/utils/text";
 import { isLoading } from "@/utils/ui";
 
 import { DeleteDialog } from "@/components/dialog";
 import { Button } from "@/components/form";
 import { LoadingRow, TD, THead } from "@/components/table";
 
+import { fetchResources } from "@/redux/resourcesSlice/fetchResources";
 import Page, { PageProps } from "./Page";
 
-const UserPage: FC<PageProps> = (props) => {
+const ResourcePage: FC<PageProps> = (props) => {
   const dispatch = useAppDispatch();
 
-  const usersStatus = useAppSelector((state) => state.users.status);
-  const departmentsStatus = useAppSelector((state) => state.departments.status);
-
-  const users = useAppSelector(usersSelector);
-  const departments = useAppSelector((state) => state.departments.list);
+  const status = useAppSelector(resourcesStatusSelector);
+  const rows = useAppSelector(resourcesSelector);
 
   const navigate = useNavigate();
 
@@ -32,9 +31,9 @@ const UserPage: FC<PageProps> = (props) => {
   const { id: deleteId, deleteHandlerById } = deleteState;
   const { isOpen: isDialogOpen, close: closeDialog } = dialog;
 
-  const { name = "người dùng" } = props;
+  const { name = "tài nguyên" } = props;
 
-  const loading = isLoading(usersStatus);
+  const loading = isLoading(status);
 
   const body = (
     <>
@@ -42,45 +41,40 @@ const UserPage: FC<PageProps> = (props) => {
         <THead
           headings={[
             "#",
-            "UID",
-            "Tên tài khoản",
-            "Email",
-            "Ngày sinh",
-            "Chức vụ",
-            "Phòng ban",
+            "ID",
+            "Loại tài nguyên",
+            "Tên",
+            "Mô tả",
+            "Miễn phí",
+            "Tình trạng",
           ]}
         />
 
         <tbody>
           {loading && <LoadingRow />}
           {!loading &&
-            users.map((user, index) => {
-              const { uid, username, email, birthday, grade, departmentId } =
-                user;
-
-              const gradeName = getGradeText(grade);
-              const departmentName = departments.find(
-                (department) => departmentId === department.id
-              )?.name;
+            rows.map((resource, index) => {
+              const { id, resourceTypeId, name, description, isFree, status } =
+                resource;
 
               return (
                 <tr
                   key={index}
                   className="border rounded cursor-pointer transition-colors hover:bg-neutral-100"
                   onClick={() => {
-                    navigate(`${user.uid}`);
+                    navigate(`${id}`);
                   }}
                 >
                   <TD>{(index + 1).toString().padStart(2, "0")}</TD>
-                  <TD>{uid}</TD>
-                  <TD>{username}</TD>
-                  <TD>{email}</TD>
-                  <TD>{dayjs(birthday).format("YYYY-MM-DD")}</TD>
-                  <TD>{gradeName}</TD>
-                  <TD>{departmentName}</TD>
+                  <TD>{id}</TD>
+                  <TD>{resourceTypeId}</TD>
+                  <TD>{name}</TD>
+                  <TD>{description}</TD>
+                  <TD>{isFree}</TD>
+                  <TD>{getStatusTypeText(status)}</TD>
                   <TD>
                     <div className="flex items-center justify-center">
-                      <Button color="danger" onClick={deleteHandlerById(uid)}>
+                      <Button color="danger" onClick={deleteHandlerById(id)}>
                         Xoá
                       </Button>
                     </div>
@@ -110,12 +104,11 @@ const UserPage: FC<PageProps> = (props) => {
   };
 
   useEffect(() => {
-    if (usersStatus === "idle") dispatch(fetchUsers());
-    if (departmentsStatus === "idle") dispatch(fetchDepartments());
+    if (status === "idle") dispatch(fetchResources());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <Page {...pageProps} />;
 };
 
-export default UserPage;
+export default ResourcePage;

@@ -17,7 +17,7 @@ import { LoadingRow, TD, THead } from "@/components/table";
 
 import Page, { PageProps } from "./Page";
 
-const UserPage: FC<PageProps> = (props) => {
+const FilePage: FC<PageProps> = (props) => {
   const dispatch = useAppDispatch();
 
   const usersStatus = useAppSelector((state) => state.users.status);
@@ -32,7 +32,7 @@ const UserPage: FC<PageProps> = (props) => {
   const { id: deleteId, deleteHandlerById } = deleteState;
   const { isOpen: isDialogOpen, close: closeDialog } = dialog;
 
-  const { name = "người dùng" } = props;
+  const { name = "tệp" } = props;
 
   const loading = isLoading(usersStatus);
 
@@ -118,4 +118,4 @@ const UserPage: FC<PageProps> = (props) => {
   return <Page {...pageProps} />;
 };
 
-export default UserPage;
+export default FilePage;

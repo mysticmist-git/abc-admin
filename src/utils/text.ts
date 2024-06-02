@@ -1,4 +1,4 @@
-import { Department, Grade, StatusType } from "@/config/erd";
+import { Department, Grade, StatusType, User } from "@/config/erd";
 
 export const capitalized = (text: string) => {
   return text.charAt(0).toUpperCase() + text.slice(1);
@@ -33,3 +33,7 @@ export const getDepartmentNameByIdFrom =
   (departments: Department[]) => (id: number) =>
     departments.find((department) => department.id === id)?.name ??
     "Phòng ban không tồn tại";
+
+export const getUserNameByUidFrom = (users: User[]) => (uid: string) =>
+  users.find((user) => user.uid === uid)?.username ??
+  "Người dùng không tồn tại";

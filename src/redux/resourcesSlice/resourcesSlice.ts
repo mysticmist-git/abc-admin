@@ -1,28 +1,28 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import { User } from "@/config/erd";
+import { Resource } from "@/config/erd";
 import { CommonSliceState } from "../common";
 import { RootState } from "../storeUtils";
-import { fetchUsers } from "./fetchUsers";
+import { fetchResources } from "./fetchResources";
 
-const initialState: CommonSliceState<User> = {
+const initialState: CommonSliceState<Resource> = {
   list: [],
   status: "idle",
 };
 
 const slice = createSlice({
-  name: "users",
+  name: "resources",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchUsers.pending, (state) => {
+    builder.addCase(fetchResources.pending, (state) => {
       state.status = "loading";
     });
-    builder.addCase(fetchUsers.fulfilled, (state, action) => {
+    builder.addCase(fetchResources.fulfilled, (state, action) => {
       state.status = "succeeded";
       state.list = action.payload;
     });
-    builder.addCase(fetchUsers.rejected, (state) => {
+    builder.addCase(fetchResources.rejected, (state) => {
       state.status = "failed";
     });
   },
@@ -31,7 +31,8 @@ const slice = createSlice({
 // Action creators are generted for each case reducer function
 export const _ = slice.actions;
 
-export const usesStatusSelector = (state: RootState) => state.users.status;
-export const usersSelector = (state: RootState) => state.users.list;
+export const resourcesStatusSelector = (state: RootState) =>
+  state.resources.status;
+export const resourcesSelector = (state: RootState) => state.resources.list;
 
 export default slice.reducer;

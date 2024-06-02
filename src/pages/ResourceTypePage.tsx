@@ -29,24 +29,14 @@ const ResourceTypePage: FC<PageProps> = (props) => {
   const { id: deleteId, deleteHandlerById } = deleteState;
   const { isOpen: isDialogOpen, close: closeDialog } = dialog;
 
-  const { name = "người dùng" } = props;
+  const { name = "loại tài nguyên" } = props;
 
   const loading = isLoading(status);
 
   const body = (
     <>
       <table className="w-full mt-8">
-        <THead
-          headings={[
-            "#",
-            "UID",
-            "Tên tài khoản",
-            "Email",
-            "Ngày sinh",
-            "Chức vụ",
-            "Phần ban",
-          ]}
-        />
+        <THead headings={["#", "ID", "Tên loại", "Mô tả", "Trạng thái"]} />
 
         <tbody>
           {loading && <LoadingRow />}

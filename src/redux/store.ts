@@ -4,8 +4,10 @@ import usersReducer from "./usersSlice/usersSlice";
 import postsReducer from "./postsSlice/postsSlice";
 import postTypesReducer from "./postTypesSlice/postTypeSlice";
 import departmentsReducer from "./departmentsSlice/departmentsSlice";
-import eventTypesSlice from "./eventTypesSlice/eventTypesSlice";
-import resourceTypesSlice from "./resourceTypesSlice/resourceTypesSlice";
+import eventTypesReducer from "./eventTypesSlice/eventTypesSlice";
+import resourceTypesReducer from "./resourceTypesSlice/resourceTypesSlice";
+import resourcesReducer from "./resourcesSlice/resourcesSlice";
+import resourceUsingsReducer from "./resourceUsingsSlice/resourceUsingsSlice";
 
 export default configureStore({
   reducer: {
@@ -13,7 +15,9 @@ export default configureStore({
     posts: postsReducer,
     postTypes: postTypesReducer,
     departments: departmentsReducer,
-    eventTypes: eventTypesSlice,
-    resourceTypes: resourceTypesSlice,
+    eventTypes: eventTypesReducer,
+    resourceTypes: resourceTypesReducer,
+    resources: resourcesReducer,
+    resourceUsings: resourceUsingsReducer,
   },
 });

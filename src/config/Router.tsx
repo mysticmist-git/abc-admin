@@ -15,6 +15,8 @@ import { route } from "@/utils/route";
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import { RouteKey } from "./route";
 import ResourceTypePage from "@/pages/ResourceTypePage";
+import ResourcePage from "@/pages/ResourcePage";
+import ResourceUsingPage from "@/pages/ResourceUsingPage";
 
 const ConfigRouter = createBrowserRouter([
   {
@@ -107,9 +109,9 @@ const ConfigRouter = createBrowserRouter([
       {
         path: route(RouteKey.ResourcePage),
         element: (
-          <EventTypePage
-            name="loại sự kiện"
-            route={route(RouteKey.EventTypePage)}
+          <ResourcePage
+            name="tài nguyên"
+            route={route(RouteKey.ResourcePage)}
           />
         ),
       },
@@ -117,9 +119,9 @@ const ConfigRouter = createBrowserRouter([
       {
         path: route(RouteKey.ResourceUsingPage),
         element: (
-          <EventTypePage
-            name="loại sự kiện"
-            route={route(RouteKey.EventTypePage)}
+          <ResourceUsingPage
+            name="mượn tài nguyên"
+            route={route(RouteKey.ResourceUsingPage)}
           />
         ),
       },
