@@ -8,6 +8,8 @@ import { fetchUsers } from "./fetchUsers";
 const initialState: CommonSliceState<User> = {
   list: [],
   status: "idle",
+  detail: null,
+  detailStatus: "idle",
 };
 
 const slice = createSlice({

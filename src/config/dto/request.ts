@@ -54,7 +54,7 @@ export type DepartmentRequestDTO = {
 };
 
 export type PostTypeRequestDTO = {
-  id: number;
+  id?: string;
   name: string;
   description: string;
   permissionIdToCRUDPost: Grade[];

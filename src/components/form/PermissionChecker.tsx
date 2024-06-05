@@ -1,52 +1,48 @@
+import { FC } from "react";
+
 import { CheckerRow } from "@/components/form";
 import { Grade, GradeArray } from "@/config/erd";
-import {
-  FieldPath,
-  FieldValues,
-  UseControllerProps,
-  useController,
-} from "react-hook-form";
+import { DEFAULT_PERMISSIONS } from "@/config/permission";
 
-const PermissionChecker = <
-  TFieldValues extends FieldValues,
-  TName extends FieldPath<TFieldValues>,
->(
-  props: UseControllerProps<TFieldValues, TName>,
-) => {
-  const { ...rest } = props;
-  const { field } = useController(rest);
+type PermissionCheckerProps = {
+  value: Grade[];
+  onChange: (value: Grade[]) => void;
+};
 
-  const getUpdatedPermissions = (index: number, value: Grade) => {
-    const clone = [...field.value];
-    clone[index] = value;
-    return clone;
+const PermissionChecker: FC<PermissionCheckerProps> = (props) => {
+  const { value = DEFAULT_PERMISSIONS, onChange } = props;
+
+  const handleChange = (index: number) => (grade: Grade) => {
+    const clone = [...value];
+    clone[index] = grade;
+    onChange(clone);
   };
 
   return (
     <>
       <CheckerRow
         heading="Tạo"
+        value={value[0]}
         options={GradeArray}
-        checkedOption={field.value[0]}
-        onCheck={(value) => field.onChange(getUpdatedPermissions(0, value))}
+        onCheck={handleChange(0)}
       />
       <CheckerRow
         heading="Đọc"
+        value={value[1]}
         options={GradeArray}
-        checkedOption={field.value[1]}
-        onCheck={(value) => field.onChange(getUpdatedPermissions(1, value))}
+        onCheck={handleChange(1)}
       />
       <CheckerRow
         heading="Cập nhật"
+        value={value[2]}
         options={GradeArray}
-        checkedOption={field.value[2]}
-        onCheck={(value) => field.onChange(getUpdatedPermissions(2, value))}
+        onCheck={handleChange(2)}
       />
       <CheckerRow
         heading="Xoá"
+        value={value[3]}
         options={GradeArray}
-        checkedOption={field.value[3]}
-        onCheck={(value) => field.onChange(getUpdatedPermissions(3, value))}
+        onCheck={handleChange(3)}
       />
     </>
   );

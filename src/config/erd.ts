@@ -4,13 +4,8 @@ export const StatusTypeArray: StatusType[] = ["create", "active", "inactive"];
 export type Action = "create" | "read" | "update" | "delete";
 export const ActionArray: Action[] = ["create", "read", "update", "delete"];
 
-export type Grade = "employee" | "manager" | "directory" | "admin";
-export const GradeArray: Grade[] = [
-  "employee",
-  "manager",
-  "directory",
-  "admin",
-];
+export type Grade = "employee" | "manager" | "director" | "admin";
+export const GradeArray: Grade[] = ["employee", "manager", "director", "admin"];
 
 export type MetricType = "like" | "view" | "comment";
 
@@ -77,7 +72,7 @@ export type Department = {
 };
 
 export type PostType = {
-  id: number;
+  id: string;
   name: string;
   description: string;
   permissionIdToCRUDPost: Grade[];

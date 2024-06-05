@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-import { SUCCESS_STATUS_CODE } from "@/config/api";
+import { SUCCESS_STATUS_CODE } from "@/config/api/api";
 import { UserRequestDTO } from "@/config/dto/request";
 import { apiUrl } from "@/utils/api";
 

@@ -1,4 +1,6 @@
 import { Button } from "@/components/form";
+import { postTypeDetailCleared } from "@/redux/postTypesSlice/postTypeSlice";
+import { useAppDispatch } from "@/redux/storeUtils";
 import { capitalized, newRoute } from "@/utils/text";
 import { FC } from "react";
 import { useNavigate } from "react-router-dom";
@@ -12,13 +14,17 @@ export type PageProps = {
 const Page: FC<PageProps> = (props) => {
   const { name = "page", route = "/baseUrl", body } = props;
 
-  const capitalizeName = capitalized(name);
-
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const capitalizeName = capitalized(name);
   const addNewText = `Thêm ${capitalizeName}`;
   const addNewUrl = newRoute(route);
 
-  const navigateToNewRoute = () => navigate(addNewUrl);
+  const navigateToNewRoute = () => {
+    dispatch(postTypeDetailCleared());
+    navigate(addNewUrl);
+  };
 
   return (
     <>

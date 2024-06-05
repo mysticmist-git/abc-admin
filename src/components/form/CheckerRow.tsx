@@ -1,13 +1,17 @@
-import { TD } from '@/components/table';
+import { TD } from "@/components/table";
+import { Grade } from "@/config/erd";
 
-const CheckerRow = <T,>(props: {
+const CheckerRow = (props: {
+  value: Grade;
   heading: string;
-  checkedOption: T;
-  options: T[];
-  onCheck: (option: T) => void;
+  options: Grade[];
+  onCheck: (option: Grade) => void;
 }) => {
-  const { heading, checkedOption, options, onCheck } = props;
+  const { value, heading, options, onCheck } = props;
 
+  const onChange = (option: Grade) => () => {
+    onCheck(option);
+  };
   return (
     <tr>
       <TD>{heading}</TD>
@@ -15,8 +19,9 @@ const CheckerRow = <T,>(props: {
         <TD key={index}>
           <input
             type="radio"
-            checked={option === checkedOption}
-            onChange={() => onCheck(option)}
+            value={value}
+            checked={value === option}
+            onChange={onChange(option)}
           />
         </TD>
       ))}

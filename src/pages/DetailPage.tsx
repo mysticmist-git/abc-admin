@@ -5,6 +5,7 @@ import { Button } from "@/components/form";
 import { capitalized } from "@/utils/text";
 
 export type DetailPageProps = {
+  loading?: boolean;
   body?: JSX.Element;
   handleNavigateBack?: () => void;
   name?: string;
@@ -13,7 +14,12 @@ export type DetailPageProps = {
 const DetailPage: FC<DetailPageProps> = (props) => {
   const { id } = useParams();
 
-  const { name = "pageName", body = <p>Body</p>, handleNavigateBack } = props;
+  const {
+    name = "pageName",
+    body = <p>Body</p>,
+    handleNavigateBack,
+    loading = false,
+  } = props;
 
   const capitalizedName = capitalized(name);
 
@@ -25,7 +31,7 @@ const DetailPage: FC<DetailPageProps> = (props) => {
       </p>
       <div>
         <div className="w-full h-[1px] my-2 bg-dark/10" />
-        {body}
+        {loading ? <p>Loading...</p> : body}
       </div>
     </>
   );

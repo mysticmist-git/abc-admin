@@ -1,25 +1,33 @@
-import { useNavigate } from "react-router-dom";
 import { FC, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { fetchPostTypes } from "@/redux/postTypesSlice/fetchPostTypes";
+import {
+  postTypeDetailLoaded,
+  postTypesSelector,
+  postTypesStatusSelector,
+} from "@/redux/postTypesSlice/postTypeSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/storeUtils";
+
+import { PostType } from "@/config/erd";
+import { usePage } from "@/hooks";
+import { getStatusTypeText } from "@/utils/text";
+import { isLoading } from "@/utils/ui";
 
 import { DeleteDialog } from "@/components/dialog";
 import { Button } from "@/components/form";
 import { LoadingRow, TD, THead } from "@/components/table";
-import { useAppDispatch, useAppSelector } from "@/redux/storeUtils";
+
 import Page, { PageProps } from "./Page";
-import { usePage } from "@/hooks";
-import {
-  postTypesSelector,
-  postTypesStatusSelector,
-} from "@/redux/postTypesSlice/postTypeSlice";
-import { fetchPostTypes } from "@/redux/postTypesSlice/fetchPostTypes";
-import { isLoading } from "@/utils/ui";
+import { apiUrl } from "@/utils/api";
+import axios from "axios";
+import { SUCCESS_STATUS_CODE } from "@/config/api/api";
 
 const PostTypePage: FC<PageProps> = (props) => {
   const status = useAppSelector(postTypesStatusSelector);
   const rows = useAppSelector(postTypesSelector);
 
   const dispatch = useAppDispatch();
-
   const navigate = useNavigate();
 
   const { deleteState, dialog } = usePage();
@@ -29,6 +37,35 @@ const PostTypePage: FC<PageProps> = (props) => {
   const name = "loại bài đăng";
 
   const loading = isLoading(status);
+
+  const onRowClick = (postType: PostType) => () => {
+    const { id } = postType;
+
+    dispatch(postTypeDetailLoaded(postType));
+    navigate(id);
+  };
+
+  const handleDeleteRow = async (id: number | string) => {
+    const url = apiUrl("/PostType");
+
+    try {
+      const response = await axios.delete(url, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: [id],
+      });
+
+      if (response.status == SUCCESS_STATUS_CODE) {
+        console.log("deleted");
+        return;
+      }
+
+      console.log("no ok");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const body = (
     <>
@@ -43,15 +80,13 @@ const PostTypePage: FC<PageProps> = (props) => {
               <tr
                 key={index}
                 className="border rounded cursor-pointer transition-colors hover:bg-neutral-100"
-                onClick={() => {
-                  navigate(`${id}`);
-                }}
+                onClick={onRowClick(postType)}
               >
                 <TD>{(index + 1).toString().padStart(2, "0")}</TD>
                 <TD>{id}</TD>
                 <TD>{name}</TD>
                 <TD>{description}</TD>
-                <TD>{status}</TD>
+                <TD>{getStatusTypeText(status)}</TD>
                 <TD>
                   <div className="flex items-center justify-center">
                     <Button color="danger" onClick={deleteHandlerById(id)}>
@@ -71,7 +106,7 @@ const PostTypePage: FC<PageProps> = (props) => {
           id: deleteId,
           text: "loại bài đăng",
         }}
-        onDelete={() => {}}
+        onDelete={() => deleteId && handleDeleteRow(deleteId)}
         onClose={closeDialog}
       />
     </>

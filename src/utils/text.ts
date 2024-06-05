@@ -14,7 +14,7 @@ export const getSubmitText = (
 export const gradeTextMap: Record<Grade, string> = {
   employee: "Nhân viên",
   manager: "Quân lý",
-  directory: "Giám đốc",
+  director: "Giám đốc",
   admin: "Quản trị viên",
 };
 

@@ -1,11 +1,33 @@
-import { FC } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import axios from "axios";
+import { FC, useEffect } from "react";
+import {
+  Controller,
+  SubmitHandler,
+  useController,
+  useForm,
+} from "react-hook-form";
+import { useNavigate, useParams } from "react-router-dom";
 
+import { SUCCESS_STATUS_CODE } from "@/config/api/api";
 import { PostTypeRequestDTO } from "@/config/dto/request";
 import { GradeArray, StatusTypeArray } from "@/config/erd";
 import { DEFAULT_PERMISSIONS } from "@/config/permission";
 import { RouteKey } from "@/config/route";
+import { apiUrl } from "@/utils/api";
 import { route } from "@/utils/route";
+import {
+  capitalized,
+  getGradeText,
+  getStatusTypeText,
+  getSubmitText,
+} from "@/utils/text";
+
+import { fetchPostTypeById } from "@/redux/postTypesSlice/fetchPostTypeById";
+import {
+  postTypeDetailSelector,
+  postTypeDetailStatusSelector,
+} from "@/redux/postTypesSlice/postTypeSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/storeUtils";
 
 import {
   Button,
@@ -15,61 +37,73 @@ import {
   WithLabel,
 } from "@/components/form";
 import { TH } from "@/components/table";
-import {
-  capitalized,
-  getGradeText,
-  getStatusTypeText,
-  getSubmitText,
-} from "@/utils/text";
-import { useNavigate, useParams } from "react-router-dom";
 import DetailPage, { DetailPageProps } from "./DetailPage";
 import { CreateMode } from "./common";
-import { useAppSelector } from "@/redux/storeUtils";
-import { apiUrl } from "@/utils/api";
-import axios from "axios";
-import { SUCCESS_STATUS_CODE } from "@/config/api";
+import { ensurePermissions } from "@/utils/permission";
 
 type DetailPostTypePageProps = DetailPageProps & CreateMode;
 
 const DetailPostTypePage: FC<DetailPostTypePageProps> = (props) => {
   const { id } = useParams();
-  const navigate = useNavigate();
-  const { handleSubmit, register, control, watch } =
-    useForm<PostTypeRequestDTO>();
-
-  watch((values) => console.log(values));
-
   const { createMode = false, name = "loại bài đăng", ...rest } = props;
 
-  const postType = useAppSelector((state) =>
-    id
-      ? state.postTypes.list.find((postType) => postType.id === parseInt(id))
-      : null
-  );
-  const capitalizedName = capitalized(name);
+  const dispatch = useAppDispatch();
+  const detail = useAppSelector(postTypeDetailSelector);
+  const detailStatus = useAppSelector(postTypeDetailStatusSelector);
 
+  const { handleSubmit, register, control, watch, reset } =
+    useForm<PostTypeRequestDTO>({
+      defaultValues: detail || {
+        permissionIdToCRUD: DEFAULT_PERMISSIONS,
+        permissionIdToCRUDPost: DEFAULT_PERMISSIONS,
+      },
+    });
+
+  useEffect(() => {
+    const isNoNeedToLoad = createMode || detailStatus === "succeeded";
+
+    if (isNoNeedToLoad) {
+      return;
+    }
+
+    // get the stop function
+    dispatch(fetchPostTypeById(id!))
+      .unwrap()
+      .then((payload) => reset(payload || {}));
+  }, [createMode, detailStatus, dispatch, id, reset]);
+
+  const navigate = useNavigate();
+
+  const capitalizedName = capitalized(name);
   const submitText = getSubmitText(createMode, capitalizedName);
 
-  const handleNavigateBack = () => navigate(route(RouteKey.PostPage));
+  const handleNavigateBack = () => navigate(route(RouteKey.PostTypePage));
 
-  const onSubmit: SubmitHandler<PostTypeRequestDTO> = async (post) => {
+  watch(console.log);
+
+  const onSubmit: SubmitHandler<PostTypeRequestDTO> = async (postType) => {
+    const url = apiUrl("/PostType");
+
     if (createMode) {
-      const url = apiUrl("/PostType");
-
-      const data = [
-        {
-          name: "string",
-          description: "string",
-          permissionIdToCRUDPost: ["employee"],
-          permissionIdToCRUD: ["employee"],
-          status: "create",
-        },
-      ];
-
-      console.log(data);
-
       try {
-        const response = await axios.post(url, data, {
+        const response = await axios.post(url, [postType], {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.status === SUCCESS_STATUS_CODE) {
+          console.log("ok");
+          return;
+        }
+        console.log("no ok");
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      try {
+        console.log("update", postType);
+        const response = await axios.put(url, [postType], {
           headers: {
             "Content-Type": "application/json",
           },
@@ -92,12 +126,18 @@ const DetailPostTypePage: FC<DetailPostTypePageProps> = (props) => {
       className="flex flex-col items-start gap-2"
     >
       <TextField
+        {...register("id", {
+          required: true,
+        })}
+        placeholder="Anounce"
+        label="ID"
+      />
+      <TextField
         {...register("name", {
           required: true,
         })}
         placeholder="Tên loại bài đăng"
         label="Tên loại bài đăng"
-        defaultValue={postType?.name}
       />
       <WithLabel label="Mô tả">
         <textarea
@@ -106,7 +146,7 @@ const DetailPostTypePage: FC<DetailPostTypePageProps> = (props) => {
           })}
           placeholder="Thông tin mô tả gì đó"
           className="border p-1 shadow"
-          defaultValue={postType?.description}
+          defaultValue={detail?.description}
         />
       </WithLabel>
 
@@ -121,12 +161,15 @@ const DetailPostTypePage: FC<DetailPostTypePageProps> = (props) => {
             </tr>
           </thead>
           <tbody>
-            <PermissionChecker
-              name="permissionIdToCRUDPost"
+            <Controller
               control={control}
-              defaultValue={
-                postType?.permissionIdToCRUDPost || DEFAULT_PERMISSIONS
-              }
+              name="permissionIdToCRUDPost"
+              render={({ field: { onChange, value } }) => (
+                <PermissionChecker
+                  value={ensurePermissions(value)}
+                  onChange={onChange}
+                />
+              )}
             />
           </tbody>
         </table>
@@ -138,15 +181,20 @@ const DetailPostTypePage: FC<DetailPostTypePageProps> = (props) => {
             <tr>
               <TH>Quyền</TH>
               {GradeArray.map((value, index) => (
-                <TH key={index}>{value}</TH>
+                <TH key={index}>{getGradeText(value)}</TH>
               ))}
             </tr>
           </thead>
           <tbody>
-            <PermissionChecker
-              name="permissionIdToCRUD"
+            <Controller
               control={control}
-              defaultValue={postType?.permissionIdToCRUD || DEFAULT_PERMISSIONS}
+              name="permissionIdToCRUD"
+              render={({ field: { onChange, value } }) => (
+                <PermissionChecker
+                  value={ensurePermissions(value)}
+                  onChange={onChange}
+                />
+              )}
             />
           </tbody>
         </table>
@@ -157,7 +205,7 @@ const DetailPostTypePage: FC<DetailPostTypePageProps> = (props) => {
         label="Trạng thái"
         options={StatusTypeArray}
         optionLabelConverter={getStatusTypeText}
-        defaultValue={postType?.status}
+        defaultValue={detail?.status}
       />
 
       <Button type="submit">{submitText}</Button>
@@ -169,6 +217,7 @@ const DetailPostTypePage: FC<DetailPostTypePageProps> = (props) => {
     name,
     body,
     handleNavigateBack,
+    loading: detailStatus === "loading",
   };
 
   return <DetailPage {...detailPageProps} />;
