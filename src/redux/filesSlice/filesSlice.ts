@@ -1,14 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 import { File } from "@/config/erd";
-import { CommonSliceState } from "../common";
+import { CommonSliceState, DEFAULT_COMMON_STATE } from "../common";
 import { RootState } from "../storeUtils";
 import { fetchFiles } from "./fetchFiles";
+import { FileRequestDTO } from "@/config/dto/request";
 
-const initialState: CommonSliceState<File> = {
-  list: [],
-  status: "idle",
-};
+const initialState: CommonSliceState<File, FileRequestDTO> =
+  DEFAULT_COMMON_STATE;
 
 const slice = createSlice({
   name: "files",

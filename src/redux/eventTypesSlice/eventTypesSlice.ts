@@ -1,13 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { RootState } from "../storeUtils";
-import { fetchEventTypes } from "./fetchEventTypes";
-import { CommonSliceState } from "../common";
-import { EventType } from "@/config/erd";
 
-const initialState: CommonSliceState<EventType> = {
-  list: [],
-  status: "idle",
-};
+import { EventTypeRequestDTO } from "@/config/dto/request";
+import { EventType } from "@/config/erd";
+import { CommonSliceState, DEFAULT_COMMON_STATE } from "../common";
+import { RootState } from "../storeUtils";
+
+import { fetchEventTypes } from "./fetchEventTypes";
+
+const initialState: CommonSliceState<EventType, EventTypeRequestDTO> =
+  DEFAULT_COMMON_STATE;
 
 const slice = createSlice({
   name: "eventTypes",

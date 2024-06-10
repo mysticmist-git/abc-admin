@@ -1,6 +1,12 @@
 import { FC } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
+
+import { DepartmentRequestDTO } from "@/config/dto/request";
+import { GradeArray, StatusTypeArray } from "@/config/erd";
+import { RouteKey } from "@/config/route";
+import { ensurePermissions } from "@/utils/permission";
+import { route } from "@/utils/route";
 
 import {
   Button,
@@ -9,12 +15,7 @@ import {
   TextField,
   WithLabel,
 } from "@/components/form";
-import { DepartmentRequestDTO } from "@/config/dto/request";
-import { GradeArray, StatusTypeArray } from "@/config/erd";
-import { RouteKey } from "@/config/route";
-import { route } from "@/utils/route";
 import { TH } from "@/components/table";
-import { DEFAULT_PERMISSIONS } from "@/config/permission";
 
 type DetailDepartmentPageProps = object;
 
@@ -66,10 +67,15 @@ const DetailDepartmentPage: FC<DetailDepartmentPageProps> = () => {
                 </tr>
               </thead>
               <tbody>
-                <PermissionChecker
-                  name="permissionIdToCRUD"
+                <Controller
                   control={control}
-                  defaultValue={DEFAULT_PERMISSIONS}
+                  name="permissionIdToCRUD"
+                  render={({ field: { onChange, value } }) => (
+                    <PermissionChecker
+                      value={ensurePermissions(value)}
+                      onChange={onChange}
+                    />
+                  )}
                 />
               </tbody>
             </table>

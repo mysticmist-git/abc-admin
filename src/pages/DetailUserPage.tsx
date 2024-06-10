@@ -18,7 +18,6 @@ import { ErrorText } from "@/components/texts";
 
 import { UserRequestDTO } from "@/config/dto/request";
 import { GradeArray, StatusTypeArray } from "@/config/erd";
-import { DEFAULT_PERMISSIONS } from "@/config/permission";
 import { RouteKey } from "@/config/route";
 import { useAppDispatch, useAppSelector } from "@/redux/storeUtils";
 import { route } from "@/utils/route";
@@ -33,6 +32,7 @@ import DetailPage, { DetailPageProps } from "./DetailPage";
 import { CreateMode } from "./common";
 import { fetchDepartments } from "@/redux/departmentsSlice/fetchDepartments";
 import { postUser } from "@/redux/usersSlice/postUser";
+import { ensurePermissions } from "@/utils/permission";
 
 type DetailUserPageProps = DetailPageProps & CreateMode;
 
@@ -175,10 +175,15 @@ const DetailUserPage: FC<DetailUserPageProps> = (props) => {
             </tr>
           </thead>
           <tbody>
-            <PermissionChecker
-              name="permissionIdToCRUD"
+            <Controller
               control={control}
-              defaultValue={user?.permissionIdToCRUD || DEFAULT_PERMISSIONS}
+              name="permissionIdToCRUD"
+              render={({ field: { onChange, value } }) => (
+                <PermissionChecker
+                  value={ensurePermissions(value)}
+                  onChange={onChange}
+                />
+              )}
             />
           </tbody>
         </table>
