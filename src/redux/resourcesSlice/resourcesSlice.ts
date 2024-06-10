@@ -1,14 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+import { ResourceRequestDTO } from "@/config/dto/request";
 import { Resource } from "@/config/erd";
-import { CommonSliceState } from "../common";
+import { CommonSliceState, DEFAULT_COMMON_STATE } from "../common";
 import { RootState } from "../storeUtils";
+
 import { fetchResources } from "./fetchResources";
 
-const initialState: CommonSliceState<Resource> = {
-  list: [],
-  status: "idle",
-};
+const initialState: CommonSliceState<Resource, ResourceRequestDTO> =
+  DEFAULT_COMMON_STATE;
 
 const slice = createSlice({
   name: "resources",

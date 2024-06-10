@@ -1,14 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../storeUtils";
-import { CommonSliceState } from "../common";
+import { CommonSliceState, DEFAULT_COMMON_STATE } from "../common";
 import { Post } from "@/config/erd";
+import { PostRequestDTO } from "@/config/dto/request";
 
-const initialState: CommonSliceState<Post> = {
-  list: [],
-  status: "idle",
-  detail: null,
-  detailStatus: "idle",
-};
+const initialState: CommonSliceState<Post, PostRequestDTO> =
+  DEFAULT_COMMON_STATE;
 
 const slice = createSlice({
   name: "posts",

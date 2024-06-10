@@ -1,15 +1,15 @@
-import { background } from '@/assets/background';
-import { signIn } from '@/utils/auth';
-import clsx from 'clsx';
+import { background } from "@/assets/background";
+import { signIn } from "@/utils/auth";
+import clsx from "clsx";
 import {
   DetailedHTMLProps,
   FC,
   InputHTMLAttributes,
   LabelHTMLAttributes,
   forwardRef,
-} from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+} from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 type SignInValues = {
   username: string;
@@ -17,7 +17,7 @@ type SignInValues = {
 };
 
 const Label: FC<LabelHTMLAttributes<HTMLLabelElement>> = (props) => {
-  const defaultClassName = 'font-bold';
+  const defaultClassName = "font-bold";
   const className = clsx(defaultClassName, props.className);
 
   return <label {...props} className={className} />;
@@ -27,7 +27,7 @@ const Input = forwardRef<
   HTMLInputElement,
   DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>
 >((props, ref) => {
-  const defaultClassName = 'w-full px-2 py-1 shadow';
+  const defaultClassName = "w-full px-2 py-1 shadow";
   const className = clsx(defaultClassName, props.className);
 
   return <input {...props} ref={ref} className={className} />;
@@ -39,8 +39,8 @@ const SignIn = () => {
   const {
     register,
     handleSubmit,
-    watch,
-    formState: { errors },
+    // watch,
+    // formState: { errors },
   } = useForm<SignInValues>();
 
   const onSignIn: SubmitHandler<SignInValues> = async (data) => {
@@ -49,7 +49,7 @@ const SignIn = () => {
     const signedIn = await signIn(username, password);
 
     if (signedIn) {
-      navigate('/');
+      navigate("/");
     }
   };
 
@@ -69,7 +69,7 @@ const SignIn = () => {
             <p>Username</p>
             <Input
               type="text"
-              {...register('username', { required: true })}
+              {...register("username", { required: true })}
               placeholder="user123456"
             />
           </Label>
@@ -78,7 +78,7 @@ const SignIn = () => {
             <Input
               type="password"
               placeholder="password"
-              {...register('password', { required: true })}
+              {...register("password", { required: true })}
             />
           </Label>
           <button

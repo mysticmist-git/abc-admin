@@ -67,7 +67,7 @@ const ConfigRouter = createBrowserRouter([
       },
       {
         path: route(RouteKey.NewPostPage),
-        element: <DetailPostPage createMode />,
+        element: <DetailPostPage />,
       },
 
       // department
@@ -129,7 +129,7 @@ const ConfigRouter = createBrowserRouter([
 
       {
         path: route(RouteKey.FilePage),
-        element: <FilePage name="tệp" route={route(RouteKey.FilePage)} />,
+        element: <FilePage />,
       },
 
       // fallback

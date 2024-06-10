@@ -1,11 +1,6 @@
 import axios from "axios";
 import { FC, useEffect } from "react";
-import {
-  Controller,
-  SubmitHandler,
-  useController,
-  useForm,
-} from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { SUCCESS_STATUS_CODE } from "@/config/api/api";
@@ -13,7 +8,14 @@ import { PostTypeRequestDTO } from "@/config/dto/request";
 import { GradeArray, StatusTypeArray } from "@/config/erd";
 import { DEFAULT_PERMISSIONS } from "@/config/permission";
 import { RouteKey } from "@/config/route";
+import { fetchPostTypeById } from "@/redux/postTypesSlice/fetchPostTypeById";
+import {
+  postTypeDetailSelector,
+  postTypeDetailStatusSelector,
+} from "@/redux/postTypesSlice/postTypeSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/storeUtils";
 import { apiUrl } from "@/utils/api";
+import { ensurePermissions } from "@/utils/permission";
 import { route } from "@/utils/route";
 import {
   capitalized,
@@ -22,12 +24,7 @@ import {
   getSubmitText,
 } from "@/utils/text";
 
-import { fetchPostTypeById } from "@/redux/postTypesSlice/fetchPostTypeById";
-import {
-  postTypeDetailSelector,
-  postTypeDetailStatusSelector,
-} from "@/redux/postTypesSlice/postTypeSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/storeUtils";
+import { CreateMode } from "./common";
 
 import {
   Button,
@@ -37,9 +34,8 @@ import {
   WithLabel,
 } from "@/components/form";
 import { TH } from "@/components/table";
+
 import DetailPage, { DetailPageProps } from "./DetailPage";
-import { CreateMode } from "./common";
-import { ensurePermissions } from "@/utils/permission";
 
 type DetailPostTypePageProps = DetailPageProps & CreateMode;
 
