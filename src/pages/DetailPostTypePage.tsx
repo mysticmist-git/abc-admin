@@ -1,9 +1,8 @@
-import axios from "axios";
 import { FC, useEffect } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
+import { ToastOptions, toast } from "react-toastify";
 
-import { SUCCESS_STATUS_CODE } from "@/config/api/api";
 import { PostTypeRequestDTO } from "@/config/dto/request";
 import { GradeArray, StatusTypeArray } from "@/config/erd";
 import { DEFAULT_PERMISSIONS } from "@/config/permission";
@@ -14,7 +13,6 @@ import {
   postTypeDetailStatusSelector,
 } from "@/redux/postTypesSlice/postTypeSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/storeUtils";
-import { apiUrl } from "@/utils/api";
 import { ensurePermissions } from "@/utils/permission";
 import { route } from "@/utils/route";
 import {
@@ -35,6 +33,7 @@ import {
 } from "@/components/form";
 import { TH } from "@/components/table";
 
+import { requestPostPostType, requestPutPostType } from "@/api/postType";
 import DetailPage, { DetailPageProps } from "./DetailPage";
 
 type DetailPostTypePageProps = DetailPageProps & CreateMode;
@@ -47,7 +46,7 @@ const DetailPostTypePage: FC<DetailPostTypePageProps> = (props) => {
   const detail = useAppSelector(postTypeDetailSelector);
   const detailStatus = useAppSelector(postTypeDetailStatusSelector);
 
-  const { handleSubmit, register, control, watch, reset } =
+  const { handleSubmit, register, control, reset } =
     useForm<PostTypeRequestDTO>({
       defaultValues: detail || {
         permissionIdToCRUD: DEFAULT_PERMISSIONS,
@@ -75,45 +74,23 @@ const DetailPostTypePage: FC<DetailPostTypePageProps> = (props) => {
 
   const handleNavigateBack = () => navigate(route(RouteKey.PostTypePage));
 
-  watch(console.log);
-
   const onSubmit: SubmitHandler<PostTypeRequestDTO> = async (postType) => {
-    const url = apiUrl("/PostType");
+    let isSuccess = false;
 
     if (createMode) {
-      try {
-        const response = await axios.post(url, [postType], {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (response.status === SUCCESS_STATUS_CODE) {
-          console.log("ok");
-          return;
-        }
-        console.log("no ok");
-      } catch (error) {
-        console.log(error);
-      }
+      isSuccess = await requestPostPostType(postType);
     } else {
-      try {
-        console.log("update", postType);
-        const response = await axios.put(url, [postType], {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (response.status === SUCCESS_STATUS_CODE) {
-          console.log("ok");
-          return;
-        }
-        console.log("no ok");
-      } catch (error) {
-        console.log(error);
-      }
+      isSuccess = await requestPutPostType(postType);
     }
+
+    const toastMessage = isSuccess
+      ? "Tạo loại bài đăng thành công"
+      : "Tạo loại bài đăng thất bại";
+    const toastOptions: ToastOptions = {
+      type: isSuccess ? "success" : "error",
+    };
+
+    toast(toastMessage, toastOptions);
   };
 
   const body = (
