@@ -63,7 +63,7 @@ const LinkComponent: FC<LinkComponentProps> = (props) => {
 const Layout: FC<PropsWithChildren> = () => {
   const location = useLocation();
 
-  const isActive = (path: string) => path === location.pathname;
+  const isActive = (path: string) => location.pathname.includes(path);
 
   return (
     <div className="grid grid-cols-12">
