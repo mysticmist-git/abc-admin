@@ -1,0 +1,13 @@
+export { default as DepartmentPage } from "./DepartmentPage";
+export { default as DetailDepartmentPage } from "./DetailDepartmentPage";
+export { default as DetailEventTypePage } from "./DetailEventTypePage";
+export { default as DetailPage } from "./DetailPage";
+export { default as DetailPostPage } from "./DetailPostPage";
+export { default as DetailPostTypePage } from "./DetailPostTypePage";
+export { default as DetailUserPage } from "./DetailUserPage";
+export { default as EventTypePage } from "./EventTypePage";
+export { default as Page } from "./Page";
+export { default as PostPage } from "./PostPage";
+export { default as PostTypePage } from "./PostTypePage";
+export { default as SignInPage } from "./SignInpage";
+export { default as UserPage } from "./UserPage";

@@ -1,84 +1,121 @@
-import clsx from 'clsx';
-import { FC, TdHTMLAttributes, ThHTMLAttributes } from 'react';
+import dayjs from "dayjs";
+import { FC, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-const commonCellCss = clsx('border p-1');
+import { usePage } from "@/hooks";
+import { fetchDepartments } from "@/redux/departmentsSlice/fetchDepartments";
+import { useAppDispatch, useAppSelector } from "@/redux/storeUtils";
+import { fetchUsers } from "@/redux/usersSlice/fetchUsers";
+import { usersSelector } from "@/redux/usersSlice/usersSlice";
 
-const TH: FC<ThHTMLAttributes<HTMLTableCellElement>> = ({
-  children,
-  className,
-  ...props
-}) => {
-  const css = clsx(className, commonCellCss);
+import { getGradeText } from "@/utils/text";
+import { isLoading } from "@/utils/ui";
 
-  return (
-    <th {...props} className={css}>
-      {children}
-    </th>
+import { DeleteDialog } from "@/components/dialog";
+import { Button } from "@/components/form";
+import { LoadingRow, TD, THead } from "@/components/table";
+
+import Page, { PageProps } from "./Page";
+
+const UserPage: FC<PageProps> = (props) => {
+  const dispatch = useAppDispatch();
+
+  const usersStatus = useAppSelector((state) => state.users.status);
+  const departmentsStatus = useAppSelector((state) => state.departments.status);
+
+  const users = useAppSelector(usersSelector);
+  const departments = useAppSelector((state) => state.departments.list);
+
+  const navigate = useNavigate();
+
+  const { deleteState, dialog } = usePage();
+  const { id: deleteId, deleteHandlerById } = deleteState;
+  const { isOpen: isDialogOpen, close: closeDialog } = dialog;
+
+  const { name = "người dùng" } = props;
+
+  const loading = isLoading(usersStatus);
+
+  const body = (
+    <>
+      <table className="w-full mt-8">
+        <THead
+          headings={[
+            "#",
+            "UID",
+            "Tên tài khoản",
+            "Email",
+            "Ngày sinh",
+            "Chức vụ",
+            "Phòng ban",
+          ]}
+        />
+
+        <tbody>
+          {loading && <LoadingRow />}
+          {!loading &&
+            users.map((user, index) => {
+              const { uid, username, email, birthday, grade, departmentId } =
+                user;
+
+              const gradeName = getGradeText(grade);
+              const departmentName = departments.find(
+                (department) => departmentId === department.id
+              )?.name;
+
+              return (
+                <tr
+                  key={index}
+                  className="border rounded cursor-pointer transition-colors hover:bg-neutral-100"
+                  onClick={() => {
+                    navigate(`${user.uid}`);
+                  }}
+                >
+                  <TD>{(index + 1).toString().padStart(2, "0")}</TD>
+                  <TD>{uid}</TD>
+                  <TD>{username}</TD>
+                  <TD>{email}</TD>
+                  <TD>{dayjs(birthday).format("YYYY-MM-DD")}</TD>
+                  <TD>{gradeName}</TD>
+                  <TD>{departmentName}</TD>
+                  <TD>
+                    <div className="flex items-center justify-center">
+                      <Button color="danger" onClick={deleteHandlerById(uid)}>
+                        Xoá
+                      </Button>
+                    </div>
+                  </TD>
+                </tr>
+              );
+            })}
+        </tbody>
+      </table>
+
+      <DeleteDialog
+        open={isDialogOpen}
+        onClose={closeDialog}
+        onDelete={() => {}}
+        deleteObject={{
+          id: deleteId,
+          text: "người dùng",
+        }}
+      />
+    </>
   );
-};
 
-const TD: FC<TdHTMLAttributes<HTMLTableCellElement>> = ({
-  children,
-  className,
-  ...props
-}) => {
-  const css = clsx(className, commonCellCss);
-
-  return (
-    <td {...props} className={css}>
-      {children}
-    </td>
-  );
-};
-
-const UserPage: FC = () => {
-  const handleDelete = () => {
-    console.log();
+  const pageProps: PageProps = {
+    ...props,
+    name,
+    body,
   };
 
-  return (
-    <table className="w-full">
-      <thead>
-        <tr className="border rounded">
-          <TH>#</TH>
-          <TH>UID</TH>
-          <TH>Username</TH>
-          <TH>Email</TH>
-          <TH>Grade</TH>
-          <TH>Department</TH>
-          <TH>Actions</TH>
-        </tr>
-      </thead>
-      <tbody>
-        <tr className="border rounded">
-          <TD>01</TD>
-          <TD>00256789-4ec636</TD>
-          <TD>Jorge_Keebler</TD>
-          <TD>Nathanial56@gmail.com</TD>
-          <TD>Manager</TD>
-          <TD>IT</TD>
-        </tr>
-        <tr className="border rounded">
-          <TD>02</TD>
-          <TD>00256789-4ec636</TD>
-          <TD>Jorge_Keebler</TD>
-          <TD>Nathanial56@gmail.com</TD>
-          <TD>Manager</TD>
-          <TD>IT</TD>
-          <TD>
-            <div>
-              <button
-                className="rounded p-1 font-bold text-neutral-100 bg-primary-500"
-                onClick={handleDelete}
-              >
-                Delete
-              </button>
-            </div>
-          </TD>
-        </tr>
-      </tbody>
-    </table>
-  );
+  useEffect(() => {
+    if (usersStatus === "idle") dispatch(fetchUsers());
+    if (departmentsStatus === "idle") dispatch(fetchDepartments());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return <Page {...pageProps} />;
 };
 
 export default UserPage;
