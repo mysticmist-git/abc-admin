@@ -5,8 +5,8 @@ import { SUCCESS_STATUS_CODE } from "@/config/api/api";
 import { PaginationParams } from "../common";
 import { apiUrl } from "@/utils/api";
 
-export const fetchPostTypes = createAsyncThunk(
-  "postTypes/fetchAll",
+export default createAsyncThunk(
+  "postTypes/fetch",
   async (params?: PaginationParams) => {
     const { page = 1, limit = 10 } = params ?? {};
 

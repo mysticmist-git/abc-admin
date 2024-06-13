@@ -7,12 +7,7 @@ import { PostTypeRequestDTO } from "@/config/dto/request";
 import { GradeArray, StatusTypeArray } from "@/config/erd";
 import { DEFAULT_PERMISSIONS } from "@/config/permission";
 import { RouteKey } from "@/config/route";
-import { fetchPostTypeById } from "@/redux/postTypesSlice/fetchPostTypeById";
-import {
-  postTypeDetailInActionSelector,
-  postTypeDetailSelector,
-  postTypeDetailStatusSelector,
-} from "@/redux/postTypesSlice/postTypeSlice";
+import {} from "@/redux/postTypesSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/storeUtils";
 import { ensurePermissions } from "@/utils/permission";
 import { route } from "@/utils/route";
@@ -34,10 +29,15 @@ import {
 } from "@/components/form";
 import { TH } from "@/components/table";
 
-import { requestPostPostType, requestPutPostType } from "@/api/postType";
-import DetailPage, { DetailPageProps } from "./DetailPage";
-import { putPostType } from "@/redux/postTypesSlice/putPostType";
 import { Loading } from "@/components/feedback";
+import { createPostType, fetchPostTypeById } from "@/redux/postTypesSlice";
+import updatePostType from "@/redux/postTypesSlice/updatePostType";
+import DetailPage, { DetailPageProps } from "./DetailPage";
+import {
+  postTypeDetailSelector,
+  postTypeDetailStatusSelector,
+  postTypeDetailInActionSelector,
+} from "@/redux/postTypesSlice/postTypeSlice";
 
 type DetailPostTypePageProps = DetailPageProps & CreateMode;
 
@@ -78,19 +78,27 @@ const DetailPostTypePage: FC<DetailPostTypePageProps> = (props) => {
 
   const handleNavigateBack = () => navigate(route(RouteKey.PostTypePage));
 
-  const onSubmit: SubmitHandler<PostTypeRequestDTO> = async (postType) => {
+  const onSubmit: SubmitHandler<PostTypeRequestDTO> = async (values) => {
     let isSuccess = false;
 
     if (createMode) {
-      isSuccess = await requestPostPostType(postType);
+      isSuccess = await dispatch(createPostType(values)).unwrap();
     } else {
       // isSuccess = await requestPutPostType(postType);
-      isSuccess = await dispatch(putPostType(postType)).unwrap();
+      isSuccess = await dispatch(updatePostType(values)).unwrap();
     }
 
-    const toastMessage = isSuccess
-      ? "Tạo loại bài đăng thành công"
-      : "Tạo loại bài đăng thất bại";
+    let toastMessage = "";
+
+    if (isSuccess) {
+      toastMessage = createMode
+        ? "Tạo loại bài đăng thành công"
+        : "Cập nhật loại bài đăng thành công";
+    } else {
+      toastMessage = createMode
+        ? "Tạo loại bài đăng thất bại"
+        : "Cập nhật loại bài đăng thất bại";
+    }
     const toastOptions: ToastOptions = {
       type: isSuccess ? "success" : "error",
     };
