@@ -1,10 +1,13 @@
+import { createSlice } from "@reduxjs/toolkit";
+
 import { PostTypeRequestDTO } from "@/config/dto/request";
 import { PostType } from "@/config/erd";
-import { createSlice } from "@reduxjs/toolkit";
-import { DEFAULT_COMMON_STATE, CommonSliceState } from "../common";
+import { CommonSliceState, DEFAULT_COMMON_STATE } from "../common";
 import { RootState } from "../storeUtils";
-import { fetchPostTypes } from "./fetchPostTypes";
-import { putPostType } from "./putPostType";
+import createPostType from "./createPostType";
+import fetchPostTypeById from "./fetchPostTypeById";
+import fetchPostTypes from "./fetchPostTypes";
+import updatePostType from "./updatePostType";
 
 const initialState: CommonSliceState<PostType, PostTypeRequestDTO> =
   DEFAULT_COMMON_STATE;
@@ -44,14 +47,37 @@ const slice = createSlice({
         state.status = "failed";
         state.list = [];
       })
-      // PUT
-      .addCase(putPostType.pending, (state) => {
+      // GET by ID
+      .addCase(fetchPostTypeById.pending, (state) => {
+        state.detailStatus = "loading";
+        state.detail = null;
+      })
+      .addCase(fetchPostTypeById.fulfilled, (state, action) => {
+        state.detailStatus = "succeeded";
+        state.detail = action.payload;
+      })
+      .addCase(fetchPostTypeById.rejected, (state) => {
+        state.detailStatus = "failed";
+        state.detail = null;
+      })
+      // POST
+      .addCase(createPostType.pending, (state) => {
         state.detailInAction = true;
       })
-      .addCase(putPostType.fulfilled, (state) => {
+      .addCase(createPostType.fulfilled, (state) => {
         state.detailInAction = false;
       })
-      .addCase(putPostType.rejected, (state) => {
+      .addCase(createPostType.rejected, (state) => {
+        state.detailInAction = false;
+      })
+      // PUT
+      .addCase(updatePostType.pending, (state) => {
+        state.detailInAction = true;
+      })
+      .addCase(updatePostType.fulfilled, (state) => {
+        state.detailInAction = false;
+      })
+      .addCase(updatePostType.rejected, (state) => {
         state.detailInAction = false;
       });
   },

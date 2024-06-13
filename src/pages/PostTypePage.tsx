@@ -1,7 +1,7 @@
+import axios from "axios";
 import { FC, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { fetchPostTypes } from "@/redux/postTypesSlice/fetchPostTypes";
 import {
   postTypeDetailLoaded,
   postTypesSelector,
@@ -9,19 +9,18 @@ import {
 } from "@/redux/postTypesSlice/postTypeSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/storeUtils";
 
+import { SUCCESS_STATUS_CODE } from "@/config/api/api";
 import { PostType } from "@/config/erd";
 import { usePage } from "@/hooks";
+import { fetchPostTypes } from "@/redux/postTypesSlice";
+import { apiUrl } from "@/utils/api";
 import { getStatusTypeText } from "@/utils/text";
 import { isLoading } from "@/utils/ui";
 
 import { DeleteDialog } from "@/components/dialog";
 import { Button } from "@/components/form";
 import { LoadingRow, TD, THead } from "@/components/table";
-
 import Page, { PageProps } from "./Page";
-import { apiUrl } from "@/utils/api";
-import axios from "axios";
-import { SUCCESS_STATUS_CODE } from "@/config/api/api";
 
 const PostTypePage: FC<PageProps> = (props) => {
   const status = useAppSelector(postTypesStatusSelector);
