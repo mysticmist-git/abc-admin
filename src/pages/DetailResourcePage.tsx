@@ -28,36 +28,14 @@ import {
   resourceDetailStatusSelector,
 } from "@/redux/resourcesSlice/resourcesSlice";
 
-import { Button, Select, TextField, WithLabel } from "@/components/form";
+import uploadFiles from "@/api/common/uploadFiles";
 import { Loading } from "@/components/feedback";
-import DetailPage, { DetailPageProps } from "./DetailPage";
+import { Button, Select, TextField, WithLabel } from "@/components/form";
+import { commonInActionSelector } from "@/redux/commonUiSlice/commonUiSlice";
 import createResource from "@/redux/resourcesSlice/createResource";
 import updateResource from "@/redux/resourcesSlice/updateResource";
-import { apiUrl } from "@/utils/api";
-import axios from "axios";
-import { GGThumbnail, SUCCESS_STATUS_CODE } from "@/config/api/api";
 import clsx from "clsx";
-
-const uploadFiles = async (files: File[]): Promise<string[]> => {
-  const url = apiUrl("/File/upload", { withVersion: false });
-
-  const formData = new FormData();
-  for (let i = 0; i < files.length; i++) {
-    formData.append("files", files[i]);
-  }
-
-  const response = await axios.post(url, formData);
-
-  if (response.status === SUCCESS_STATUS_CODE) {
-    const { data } = response;
-    const urls = data.map(
-      (uploadedFile: { id: string }) => `${GGThumbnail}${uploadedFile.id}`
-    );
-    return urls;
-  }
-
-  throw new Error("Upload images fail");
-};
+import DetailPage, { DetailPageProps } from "./DetailPage";
 
 type DetailResourcePage = DetailPageProps & CreateMode;
 
@@ -121,7 +99,7 @@ const ImagesUpload: FC<ImagesUploadProps> = (props) => {
         <div className="flex gap-4">
           {urls.map((url, index) => {
             const handleRemove = () => {
-              if (!onChange) return;
+              if (!onChange || disabled) return;
               setComponentFiles((prev) => {
                 const changedFiles = prev.filter((_, i) => i !== index);
                 onChange(changedFiles);
@@ -137,11 +115,16 @@ const ImagesUpload: FC<ImagesUploadProps> = (props) => {
                   className="rounded border border-neutral-100 w-40 aspect-square object-cover"
                 />
                 <div
-                  className="-top-3 -right-3 absolute rounded-full w-6 aspect-square bg-neutral-400 hover:bg-neutral-600 transition-all"
+                  className={clsx(
+                    "-top-3 -right-3 absolute rounded-full w-6 aspect-square bg-neutral-400 hover:bg-neutral-600 transition-all ",
+                    {
+                      "bg-neutral-600": disabled,
+                    }
+                  )}
                   onClick={handleRemove}
                 >
                   <button
-                    className="absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 text-light"
+                    className="absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 text-light disabled:opacity-50"
                     disabled={disabled}
                   >
                     X
@@ -161,9 +144,13 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
   const { createMode = false, name = "tài nguyên", ...rest } = props;
 
   const dispatch = useAppDispatch();
+
+  const commonInAction = useAppSelector(commonInActionSelector);
   const detail = useAppSelector(resourceDetailSelector);
   const detailStatus = useAppSelector(resourceDetailStatusSelector);
   const detailInAction = useAppSelector(resourceDetailInActionSelector);
+
+  const inAction = commonInAction || detailInAction;
 
   const { handleSubmit, register, reset, resetField, control, watch } =
     useForm<ResourceRequestWithFileImagesDTO>({
@@ -229,7 +216,10 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
     let imageUrls: string[] = [];
 
     try {
-      imageUrls = fileImages.length > 0 ? await uploadFiles(fileImages) : [];
+      imageUrls =
+        fileImages.length > 0
+          ? await dispatch(uploadFiles(fileImages)).unwrap()
+          : [];
     } catch (error) {
       console.log(error);
       toast("Đăng tải hình ảnh thất bại", {
@@ -286,7 +276,7 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
         })}
         placeholder="Device"
         label="ID"
-        disabled={detailInAction}
+        disabled={inAction}
       />
       <TextField
         {...register("name", {
@@ -294,7 +284,7 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
         })}
         placeholder="Thiết bị"
         label="Tên tài nguyên"
-        disabled={detailInAction}
+        disabled={inAction}
       />
       <WithLabel label="Mô tả">
         <textarea
@@ -305,7 +295,7 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
           className="border p-1 shadow"
           rows={6}
           defaultValue={detail?.description}
-          disabled={detailInAction}
+          disabled={inAction}
         />
       </WithLabel>
 
@@ -317,7 +307,7 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
           <ImagesUpload
             files={field.value}
             onChange={field.onChange}
-            disabled={detailInAction}
+            disabled={inAction}
           />
         )}
       />
@@ -329,7 +319,7 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
           resourceTypes.find((type) => type.id === id)?.name || "Không tìm thấy"
         }
         {...register("resourceTypeId")}
-        disabled={detailInAction}
+        disabled={inAction}
       />
 
       {createMode && (
@@ -349,15 +339,15 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
         options={StatusTypeArray}
         optionLabelConverter={getStatusTypeText}
         defaultValue={detail?.status}
-        disabled={detailInAction}
+        disabled={inAction}
       />
 
       <Button
         type="submit"
         className="disabled:cursor-not-allowed disabled:bg-neutral-400"
-        disabled={detailInAction}
+        disabled={inAction}
       >
-        {detailInAction ? <Loading /> : submitText}
+        {inAction ? <Loading /> : submitText}
       </Button>
     </form>
   );
@@ -368,7 +358,7 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
     body,
     handleNavigateBack,
     loading: detailStatus === "loading" || resourceTypesStatus === "loading",
-    disabled: detailInAction,
+    disabled: inAction,
   };
 
   return <DetailPage {...detailPageProps} />;
