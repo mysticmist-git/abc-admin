@@ -24,7 +24,15 @@ export const requestPostPostType = async (
   }
 };
 
-export const requestPutPostType = async (data: PostTypeRequestDTO) => {
+/**
+ * Request to update the post type
+ *
+ * @param data postType body
+ * @returns Request status
+ */
+export const requestPutPostType = async (
+  data: PostTypeRequestDTO
+): Promise<boolean> => {
   const url = apiUrl("/PostType");
   const body = [data];
 

@@ -9,6 +9,7 @@ import { DEFAULT_PERMISSIONS } from "@/config/permission";
 import { RouteKey } from "@/config/route";
 import { fetchPostTypeById } from "@/redux/postTypesSlice/fetchPostTypeById";
 import {
+  postTypeDetailInActionSelector,
   postTypeDetailSelector,
   postTypeDetailStatusSelector,
 } from "@/redux/postTypesSlice/postTypeSlice";
@@ -35,6 +36,8 @@ import { TH } from "@/components/table";
 
 import { requestPostPostType, requestPutPostType } from "@/api/postType";
 import DetailPage, { DetailPageProps } from "./DetailPage";
+import { putPostType } from "@/redux/postTypesSlice/putPostType";
+import { Loading } from "@/components/feedback";
 
 type DetailPostTypePageProps = DetailPageProps & CreateMode;
 
@@ -45,6 +48,7 @@ const DetailPostTypePage: FC<DetailPostTypePageProps> = (props) => {
   const dispatch = useAppDispatch();
   const detail = useAppSelector(postTypeDetailSelector);
   const detailStatus = useAppSelector(postTypeDetailStatusSelector);
+  const detailInAction = useAppSelector(postTypeDetailInActionSelector);
 
   const { handleSubmit, register, control, reset } =
     useForm<PostTypeRequestDTO>({
@@ -80,7 +84,8 @@ const DetailPostTypePage: FC<DetailPostTypePageProps> = (props) => {
     if (createMode) {
       isSuccess = await requestPostPostType(postType);
     } else {
-      isSuccess = await requestPutPostType(postType);
+      // isSuccess = await requestPutPostType(postType);
+      isSuccess = await dispatch(putPostType(postType)).unwrap();
     }
 
     const toastMessage = isSuccess
@@ -181,7 +186,7 @@ const DetailPostTypePage: FC<DetailPostTypePageProps> = (props) => {
         defaultValue={detail?.status}
       />
 
-      <Button type="submit">{submitText}</Button>
+      <Button type="submit">{detailInAction ? <Loading /> : submitText}</Button>
     </form>
   );
 
