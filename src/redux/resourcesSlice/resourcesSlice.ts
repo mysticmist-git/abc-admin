@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 import { ResourceRequestWithFileImagesDTO } from "@/config/dto/request";
-import { Resource } from "@/config/erd";
+import { ActionArray, Resource } from "@/config/erd";
 import { CommonSliceState, DEFAULT_COMMON_STATE } from "../common";
 import { RootState } from "../storeUtils";
 import { fetchResources } from "./fetchResources";
@@ -18,6 +18,10 @@ const slice = createSlice({
   name: "resources",
   initialState,
   reducers: {
+    resourceDetailCleared: (state) => {
+      state.detail = null;
+      state.detailStatus = "idle";
+    },
     resourceLoaded: (state, action) => {
       state.detail = action.payload;
       state.detailStatus = "succeeded";
@@ -47,8 +51,14 @@ const slice = createSlice({
       .addCase(createResource.pending, (state) => {
         state.detailInAction = true;
       })
-      .addCase(createResource.fulfilled, (state) => {
+      .addCase(createResource.fulfilled, (state, action) => {
         state.detailInAction = false;
+        if (!action.payload) {
+          return;
+        }
+
+        state.list.push(action.payload);
+        state.detail = action.payload;
       })
       .addCase(createResource.rejected, (state) => {
         state.detailInAction = false;
@@ -57,8 +67,17 @@ const slice = createSlice({
       .addCase(updateResource.pending, (state) => {
         state.detailInAction = true;
       })
-      .addCase(updateResource.fulfilled, (state) => {
+      .addCase(updateResource.fulfilled, (state, action) => {
         state.detailInAction = false;
+        state.list = state.list.map((resource) => {
+          if (resource.id === action.payload.id) {
+            return {
+              ...resource,
+              ...action.payload,
+            };
+          }
+          return resource;
+        });
       })
       .addCase(updateResource.rejected, (state) => {
         state.detailInAction = false;
@@ -81,7 +100,8 @@ const slice = createSlice({
 });
 
 // Action creators are generted for each case reducer function
-export const { resourceLoaded, resourceDeleted } = slice.actions;
+export const { resourceLoaded, resourceDeleted, resourceDetailCleared } =
+  slice.actions;
 
 export const resourcesStatusSelector = (state: RootState) =>
   state.resources.status;

@@ -3,7 +3,10 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { ToastOptions, toast } from "react-toastify";
 
-import { ResourceRequestWithFileImagesDTO } from "@/config/dto/request";
+import {
+  ResourceRequestWithFileImagesDTO,
+  ResourceRequestWithStringImages,
+} from "@/config/dto/request";
 import { StatusTypeArray } from "@/config/erd";
 import { RouteKey } from "@/config/route";
 import {} from "@/redux/postTypesSlice";
@@ -167,8 +170,13 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
       defaultValues: detail || {},
     });
 
+  const resourceTypes = useAppSelector(resourceTypesSelector);
+  const resourceTypesStatus = useAppSelector(resourceTypesStatusSelector);
+
   useEffect(() => {
-    const isNoNeedToLoad = createMode || detailStatus === "succeeded";
+    const isNoNeedToLoad =
+      createMode ||
+      (detailStatus === "succeeded" && resourceTypesStatus === "succeeded");
 
     if (isNoNeedToLoad) {
       return;
@@ -178,20 +186,24 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
     dispatch(fetchResourceById(id!))
       .unwrap()
       .then((payload) => reset(payload || {}));
-  }, [createMode, detailStatus, dispatch, id, reset]);
-
-  const resourceTypes = useAppSelector(resourceTypesSelector);
-  const resourceTypeStatus = useAppSelector(resourceTypesStatusSelector);
+  }, [createMode, detailStatus, dispatch, id, reset, resourceTypesStatus]);
 
   useEffect(() => {
     const execute = async () => {
-      if (resourceTypeStatus === "idle") {
+      if (resourceTypesStatus === "idle") {
+        console.log("loading...");
         const resourceTypes = await dispatch(fetchResourceTypes()).unwrap();
-        resetField("resourceTypeId", resourceTypes[0].id);
+        const { id } = resourceTypes[0];
+        console.log(id);
+        resetField("resourceTypeId", {
+          defaultValue: id,
+        });
       }
     };
     execute();
-  }, [dispatch, resetField, resourceTypeStatus]);
+  }, [dispatch, resetField, resourceTypesStatus]);
+
+  watch((values) => console.log(values));
 
   const navigate = useNavigate();
 
@@ -207,7 +219,9 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
 
     const { images, ...rest } = values;
 
-    const stringImages = images.filter((image) => typeof image === "string");
+    const stringImages = images.filter(
+      (image) => typeof image === "string"
+    ) as string[];
     const fileImages = images.filter(
       (image) => typeof image !== "string" && image instanceof File
     ) as File[];
@@ -224,7 +238,7 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
       return;
     }
 
-    const updateValues = {
+    const updateValues: ResourceRequestWithStringImages = {
       ...rest,
       images: [...stringImages, ...imageUrls],
     };
@@ -232,9 +246,13 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
     console.log(updateValues);
 
     if (createMode) {
-      isSuccess = await dispatch(createResource(updateValues)).unwrap();
+      const addedData = await dispatch(createResource(updateValues)).unwrap();
+      isSuccess = !!addedData;
+      if (addedData) {
+        navigate(`/resources/${addedData.id}`);
+      }
     } else {
-      isSuccess = await dispatch(updateResource(updateValues)).unwrap();
+      isSuccess = await !!dispatch(updateResource(updateValues)).unwrap();
     }
 
     let toastMessage = "";
@@ -349,7 +367,7 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
     name,
     body,
     handleNavigateBack,
-    loading: detailStatus === "loading",
+    loading: detailStatus === "loading" || resourceTypesStatus === "loading",
     disabled: detailInAction,
   };
 

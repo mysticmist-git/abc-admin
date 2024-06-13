@@ -9,20 +9,22 @@ export type PageProps = {
   route?: string;
   name?: string;
   body?: JSX.Element;
+  onCreateNew?: () => void;
 };
 
 const Page: FC<PageProps> = (props) => {
-  const { name = "page", route = "/baseUrl", body } = props;
+  const { name = "page", route = "/baseUrl", body, onCreateNew } = props;
 
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
 
   const capitalizeName = capitalized(name);
   const addNewText = `Thêm ${capitalizeName}`;
   const addNewUrl = newRoute(route);
 
   const navigateToNewRoute = () => {
-    dispatch(postTypeDetailCleared());
+    if (onCreateNew) {
+      onCreateNew();
+    }
     navigate(addNewUrl);
   };
 

@@ -5,6 +5,7 @@ import { usePage } from "@/hooks";
 
 import {
   resourceDeleted,
+  resourceDetailCleared,
   resourceLoaded,
   resourcesSelector,
   resourcesStatusSelector,
@@ -21,8 +22,6 @@ import { LoadingRow, TD, THead } from "@/components/table";
 import { fetchResources } from "@/redux/resourcesSlice/fetchResources";
 import Page, { PageProps } from "./Page";
 import { Resource } from "@/config/erd";
-import { apiUrl } from "@/utils/api";
-import axios from "axios";
 import { toast } from "react-toastify";
 import removeResource from "@/redux/resourcesSlice/removeResource";
 
@@ -81,8 +80,6 @@ const ResourcePage: FC<PageProps> = (props) => {
               const { id, resourceTypeId, name, description, isFree, status } =
                 row;
 
-              console.log(isFree);
-
               return (
                 <tr
                   key={index}
@@ -126,6 +123,9 @@ const ResourcePage: FC<PageProps> = (props) => {
     ...props,
     name,
     body,
+    onCreateNew: () => {
+      dispatch(resourceDetailCleared());
+    },
   };
 
   useEffect(() => {

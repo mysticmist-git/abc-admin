@@ -3,10 +3,11 @@ import axios from "axios";
 import { SUCCESS_STATUS_CODE } from "@/config/api/api";
 import { ResourceRequestWithFileImagesDTO } from "@/config/dto/request";
 import { apiUrl } from "@/utils/api";
+import { Resource } from "@/config/erd";
 
 export default async (
   data: ResourceRequestWithFileImagesDTO
-): Promise<boolean> => {
+): Promise<Resource | null> => {
   const url = apiUrl("/Resource");
   const body = [data];
 
@@ -17,9 +18,12 @@ export default async (
       },
     });
 
-    return response.status === SUCCESS_STATUS_CODE;
+    if (response.status === SUCCESS_STATUS_CODE) {
+      return response.data[0];
+    }
+    return null;
   } catch (error) {
     console.log(error);
-    return false;
+    return null;
   }
 };

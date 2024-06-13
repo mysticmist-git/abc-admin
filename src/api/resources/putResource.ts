@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { SUCCESS_STATUS_CODE } from "@/config/api/api";
+import { NO_CONTENT, SUCCESS_STATUS_CODE } from "@/config/api/api";
 import { ResourceRequestWithFileImagesDTO } from "@/config/dto/request";
 import { apiUrl } from "@/utils/api";
 
@@ -15,7 +15,9 @@ export default async (data: ResourceRequestWithFileImagesDTO) => {
       },
     });
 
-    return response.status === SUCCESS_STATUS_CODE;
+    return (
+      response.status === SUCCESS_STATUS_CODE || response.status === NO_CONTENT
+    );
   } catch (error) {
     console.log(error);
     return false;
