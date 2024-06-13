@@ -33,6 +33,7 @@ import updateResource from "@/redux/resourcesSlice/updateResource";
 import { apiUrl } from "@/utils/api";
 import axios from "axios";
 import { GGThumbnail, SUCCESS_STATUS_CODE } from "@/config/api/api";
+import clsx from "clsx";
 
 const uploadFiles = async (files: File[]): Promise<string[]> => {
   const url = apiUrl("/File/upload", { withVersion: false });
@@ -60,10 +61,11 @@ type DetailResourcePage = DetailPageProps & CreateMode;
 type ImagesUploadProps = {
   files: (File | string)[];
   onChange?: (files: (File | string)[]) => void;
+  disabled?: boolean;
 };
 
 const ImagesUpload: FC<ImagesUploadProps> = (props) => {
-  const { files, onChange } = props;
+  const { files, onChange, disabled = false } = props;
 
   const [componentFiles, setComponentFiles] = useState<(File | string)[]>(
     files || []
@@ -96,7 +98,12 @@ const ImagesUpload: FC<ImagesUploadProps> = (props) => {
   return (
     <>
       <WithLabel label="Hình ảnh">
-        <div className="rounded p-2 font-bold bg-neutral-100 cursor-pointer">
+        <div
+          className={clsx(
+            "rounded p-2 font-bold bg-neutral-100",
+            disabled ? "cursor-not-allowed" : "cursor-pointer"
+          )}
+        >
           <p>Tải hình ảnh lên</p>
         </div>
         <input
@@ -104,6 +111,7 @@ const ImagesUpload: FC<ImagesUploadProps> = (props) => {
           accept="image/*"
           className="border p-1 shadow hidden"
           onChange={handleChange}
+          disabled={disabled}
         />
       </WithLabel>
       {urls && (
@@ -129,7 +137,10 @@ const ImagesUpload: FC<ImagesUploadProps> = (props) => {
                   className="-top-3 -right-3 absolute rounded-full w-6 aspect-square bg-neutral-400 hover:bg-neutral-600 transition-all"
                   onClick={handleRemove}
                 >
-                  <button className="absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 text-light">
+                  <button
+                    className="absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 text-light"
+                    disabled={disabled}
+                  >
                     X
                   </button>
                 </div>
@@ -257,6 +268,7 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
         })}
         placeholder="Device"
         label="ID"
+        disabled={detailInAction}
       />
       <TextField
         {...register("name", {
@@ -264,6 +276,7 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
         })}
         placeholder="Thiết bị"
         label="Tên tài nguyên"
+        disabled={detailInAction}
       />
       <WithLabel label="Mô tả">
         <textarea
@@ -274,6 +287,7 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
           className="border p-1 shadow"
           rows={6}
           defaultValue={detail?.description}
+          disabled={detailInAction}
         />
       </WithLabel>
 
@@ -282,7 +296,11 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
         name="images"
         defaultValue={[]}
         render={({ field }) => (
-          <ImagesUpload files={field.value} onChange={field.onChange} />
+          <ImagesUpload
+            files={field.value}
+            onChange={field.onChange}
+            disabled={detailInAction}
+          />
         )}
       />
 
@@ -293,11 +311,17 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
           resourceTypes.find((type) => type.id === id)?.name || "Không tìm thấy"
         }
         {...register("resourceTypeId")}
+        disabled={detailInAction}
       />
 
       {createMode && (
         <WithLabel label="Khả dụng" horizontal>
-          <input type="checkbox" />
+          <input
+            {...register("isFree")}
+            type="checkbox"
+            disabled
+            defaultChecked
+          />
         </WithLabel>
       )}
 
@@ -307,9 +331,16 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
         options={StatusTypeArray}
         optionLabelConverter={getStatusTypeText}
         defaultValue={detail?.status}
+        disabled={detailInAction}
       />
 
-      <Button type="submit">{detailInAction ? <Loading /> : submitText}</Button>
+      <Button
+        type="submit"
+        className="disabled:cursor-not-allowed disabled:bg-neutral-400"
+        disabled={detailInAction}
+      >
+        {detailInAction ? <Loading /> : submitText}
+      </Button>
     </form>
   );
 
@@ -319,6 +350,7 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
     body,
     handleNavigateBack,
     loading: detailStatus === "loading",
+    disabled: detailInAction,
   };
 
   return <DetailPage {...detailPageProps} />;

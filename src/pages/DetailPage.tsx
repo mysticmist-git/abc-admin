@@ -9,6 +9,7 @@ export type DetailPageProps = {
   body?: JSX.Element;
   handleNavigateBack?: () => void;
   name?: string;
+  disabled?: boolean;
 };
 
 const DetailPage: FC<DetailPageProps> = (props) => {
@@ -19,13 +20,20 @@ const DetailPage: FC<DetailPageProps> = (props) => {
     body = <p>Body</p>,
     handleNavigateBack,
     loading = false,
+    disabled = false,
   } = props;
 
   const capitalizedName = capitalized(name);
 
   return (
     <>
-      <Button onClick={handleNavigateBack}>Quay lại</Button>
+      <Button
+        onClick={handleNavigateBack}
+        className="disabled:bg-neutral-400 disabled:cursor-not-allowed"
+        disabled={disabled}
+      >
+        Quay lại
+      </Button>
       <p className="inline ml-3 font-bold">
         {capitalizedName} - {id}
       </p>

@@ -109,8 +109,6 @@ const ResourcePage: FC<PageProps> = (props) => {
         </tbody>
       </table>
 
-      <div></div>
-
       <DeleteDialog
         open={isDialogOpen}
         onClose={closeDialog}

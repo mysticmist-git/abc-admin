@@ -26,7 +26,7 @@ const Dialog: FC<DialogProps> = (props) => {
       <dialog
         {...rest}
         open={open}
-        className="min-w-[25%] border rounded border-neutral-400"
+        className="absolute top-1/2 -translate-y-1/2 min-w-[25%] border rounded border-neutral-400"
       >
         <div className="flex justify-between items-center border-b p-2">
           <p className="font-bold">{title}</p>
