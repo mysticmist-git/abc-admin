@@ -6,7 +6,7 @@ import { UserRequestDTO } from "@/config/dto/request";
 import { apiUrl } from "@/utils/api";
 
 export const postUser = createAsyncThunk(
-  "users/post",
+  "users/create",
   async (param: UserRequestDTO) => {
     const url = apiUrl("/User");
 

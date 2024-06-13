@@ -6,6 +6,7 @@ export type CommonSliceState<T, TRequestDTO> = {
   detailInAction: boolean;
   list: T[];
   status: ApiCallStatus;
+  inAction: boolean;
 };
 
 export type PaginationParams = {
@@ -20,4 +21,5 @@ export const DEFAULT_COMMON_STATE: CommonSliceState<any, any> = {
   detailInAction: false,
   list: [],
   status: "idle",
+  inAction: false,
 };

@@ -122,7 +122,7 @@ export type ResouceTypeRequestDTO = {
   status: StatusType;
 };
 
-export type ResourceRequestDTO = {
+export type BaseResourceRequestDTO = {
   id: number;
   resourceTypeId: number;
   name: string;
@@ -131,6 +131,14 @@ export type ResourceRequestDTO = {
   //
 
   status: StatusType;
+};
+
+export type ResourceRequestWithFileImagesDTO = BaseResourceRequestDTO & {
+  images: (File | string)[];
+};
+
+export type ResourceRequestWithStringImages = BaseResourceRequestDTO & {
+  images: string[];
 };
 
 export type ResourceUsingRequestDTO = {

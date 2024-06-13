@@ -17,7 +17,7 @@ const Button: FC<
     {
       [colorMap[color]]: true,
     },
-    passedClassName,
+    passedClassName
   );
 
   return <button {...props} className={className} />;

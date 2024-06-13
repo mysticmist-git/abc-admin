@@ -4,11 +4,12 @@ import useOpen from "./useOpen";
 const usePage = () => {
   const [isDialogOpen, openDialog, closeDialog] = useOpen();
   const [deleteId, setDeleteId] = useState<number | string | undefined>(
-    undefined,
+    undefined
   );
 
   const handleDeleteId =
-    (id: number | string) => (event: MouseEvent<HTMLButtonElement>) => {
+    (id?: number | string | undefined) =>
+    (event: MouseEvent<HTMLButtonElement>) => {
       event.stopPropagation();
 
       setDeleteId(id);

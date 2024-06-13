@@ -153,6 +153,7 @@ export type Resource = {
   name: string;
   description: string;
   isFree: boolean; // sync with ResourceUsing
+  images: string[];
   //
   createdAt: Date;
   updatedAt: Date;

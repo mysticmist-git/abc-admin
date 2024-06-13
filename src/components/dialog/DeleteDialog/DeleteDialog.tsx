@@ -12,6 +12,7 @@ export type DeleteObject = {
 export type DeleteDialogProps = {
   deleteObject: DeleteObject;
   onDelete?: () => void;
+  isDeleting?: boolean;
 } & DialogProps;
 
 const DeleteDialog: FC<DeleteDialogProps> = (props) => {
@@ -20,8 +21,9 @@ const DeleteDialog: FC<DeleteDialogProps> = (props) => {
     deleteObject,
     onClose,
     onDelete: onDeleteClick,
-    open,
     title: titleProp,
+    isDeleting = false,
+    ...rest
   } = props;
 
   const { id = "deleteObjectId", text = "deleteObjectText" } = deleteObject;
@@ -33,14 +35,15 @@ const DeleteDialog: FC<DeleteDialogProps> = (props) => {
 
   return (
     <Dialog
-      open={open}
+      {...rest}
       title={title}
       onClose={closeDialog}
       body={body}
       actions={defaultDialogButtons({
-        deleteObjectText: text,
+        deleteObjectText: isDeleting ? "..." : text,
         onDeleteClick: onDeleteClick,
         onCloseClick: onClose,
+        disabled: isDeleting,
       })}
     />
   );

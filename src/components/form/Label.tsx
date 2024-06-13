@@ -1,11 +1,13 @@
-import clsx from 'clsx';
-import { FC, LabelHTMLAttributes } from 'react';
+import clsx from "clsx";
+import { FC, LabelHTMLAttributes } from "react";
 
 const Label: FC<LabelHTMLAttributes<HTMLLabelElement>> = (props) => {
-  const defaultClassName = 'font-bold';
-  const className = clsx(defaultClassName, props.className);
+  const { className, ...rest } = props;
 
-  return <label {...props} className={className} />;
+  const defaultClassName = "font-bold";
+  const labelClassName = clsx(defaultClassName, className);
+
+  return <label {...rest} className={labelClassName} />;
 };
 
 export default Label;

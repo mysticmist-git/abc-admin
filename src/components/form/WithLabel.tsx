@@ -1,17 +1,20 @@
-import { FC, PropsWithChildren } from 'react';
-import Label from './Label';
-import { WithLabelProperty } from './componentCommonType';
+import clsx from "clsx";
+import { FC, PropsWithChildren } from "react";
 
-const WithLabel: FC<PropsWithChildren<WithLabelProperty>> = ({
-  label,
-  children,
-}) => {
+import Label from "./Label";
+import { WithLabelProperty } from "./componentCommonType";
+
+const WithLabel: FC<PropsWithChildren<WithLabelProperty>> = (props) => {
+  const { label, children, horizontal = false } = props;
+
   if (!label) {
     return children;
   }
 
+  const horizontalClassName = clsx("flex gap-2 items-center");
+
   return (
-    <Label>
+    <Label className={horizontal ? horizontalClassName : ""}>
       <p>{label}</p>
       {children}
     </Label>

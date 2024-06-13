@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { usePage } from "@/hooks";
 
 import {
+  resourceDeleted,
+  resourceLoaded,
   resourcesSelector,
   resourcesStatusSelector,
 } from "@/redux/resourcesSlice/resourcesSlice";
@@ -18,6 +20,11 @@ import { LoadingRow, TD, THead } from "@/components/table";
 
 import { fetchResources } from "@/redux/resourcesSlice/fetchResources";
 import Page, { PageProps } from "./Page";
+import { Resource } from "@/config/erd";
+import { apiUrl } from "@/utils/api";
+import axios from "axios";
+import { toast } from "react-toastify";
+import removeResource from "@/redux/resourcesSlice/removeResource";
 
 const ResourcePage: FC<PageProps> = (props) => {
   const dispatch = useAppDispatch();
@@ -33,7 +40,24 @@ const ResourcePage: FC<PageProps> = (props) => {
 
   const { name = "tài nguyên" } = props;
 
+  const inAction = useAppSelector((state) => state.resources.inAction);
+
   const loading = isLoading(status);
+
+  const onRowClick = (row: Resource) => () => {
+    const { id } = row;
+
+    dispatch(resourceLoaded(row));
+
+    navigate(id.toString());
+  };
+
+  const handleDeleteRow = async () => {
+    await dispatch(removeResource(Number(deleteId))).unwrap();
+    toast.success("Đã xóa");
+    deleteHandlerById(undefined);
+    closeDialog();
+  };
 
   const body = (
     <>
@@ -45,7 +69,7 @@ const ResourcePage: FC<PageProps> = (props) => {
             "Loại tài nguyên",
             "Tên",
             "Mô tả",
-            "Miễn phí",
+            "Khả dụng",
             "Tình trạng",
           ]}
         />
@@ -53,24 +77,24 @@ const ResourcePage: FC<PageProps> = (props) => {
         <tbody>
           {loading && <LoadingRow />}
           {!loading &&
-            rows.map((resource, index) => {
+            rows.map((row, index) => {
               const { id, resourceTypeId, name, description, isFree, status } =
-                resource;
+                row;
+
+              console.log(isFree);
 
               return (
                 <tr
                   key={index}
                   className="border rounded cursor-pointer transition-colors hover:bg-neutral-100"
-                  onClick={() => {
-                    navigate(`${id}`);
-                  }}
+                  onClick={onRowClick(row)}
                 >
                   <TD>{(index + 1).toString().padStart(2, "0")}</TD>
                   <TD>{id}</TD>
                   <TD>{resourceTypeId}</TD>
                   <TD>{name}</TD>
                   <TD>{description}</TD>
-                  <TD>{isFree}</TD>
+                  <TD>{isFree ? "Có" : "Không"}</TD>
                   <TD>{getStatusTypeText(status)}</TD>
                   <TD>
                     <div className="flex items-center justify-center">
@@ -85,14 +109,17 @@ const ResourcePage: FC<PageProps> = (props) => {
         </tbody>
       </table>
 
+      <div></div>
+
       <DeleteDialog
         open={isDialogOpen}
         onClose={closeDialog}
-        onDelete={() => {}}
+        onDelete={handleDeleteRow}
         deleteObject={{
           id: deleteId,
-          text: "người dùng",
+          text: "tài nguyên",
         }}
+        isDeleting={inAction}
       />
     </>
   );
@@ -104,7 +131,13 @@ const ResourcePage: FC<PageProps> = (props) => {
   };
 
   useEffect(() => {
-    if (status === "idle") dispatch(fetchResources());
+    if (status === "idle")
+      dispatch(
+        fetchResources({
+          page: 1,
+          limit: 100,
+        })
+      );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
