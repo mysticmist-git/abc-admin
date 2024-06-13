@@ -5,12 +5,12 @@ import { SUCCESS_STATUS_CODE } from "@/config/api/api";
 import { PaginationParams } from "../common";
 import { apiUrl } from "@/utils/api";
 
-export const fetchUsers = createAsyncThunk(
-  "users/fetch",
+export const fetchPosts = createAsyncThunk(
+  "posts/fetch",
   async (params?: PaginationParams) => {
     const { page = 1, limit = 10 } = params ?? {};
 
-    const url = apiUrl("/User/getAll");
+    const url = apiUrl("/PostType/getAll");
 
     const response = await axios.post(url, {
       page,
@@ -19,7 +19,6 @@ export const fetchUsers = createAsyncThunk(
 
     if (response.status === SUCCESS_STATUS_CODE) {
       const { data } = response;
-
       return data;
     }
 

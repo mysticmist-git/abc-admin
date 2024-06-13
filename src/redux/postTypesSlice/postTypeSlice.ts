@@ -3,7 +3,6 @@ import { PostType } from "@/config/erd";
 import { createSlice } from "@reduxjs/toolkit";
 import { DEFAULT_COMMON_STATE, CommonSliceState } from "../common";
 import { RootState } from "../storeUtils";
-import { fetchPostTypeById } from "./fetchPostTypeById";
 import { fetchPostTypes } from "./fetchPostTypes";
 
 const initialState: CommonSliceState<PostType, PostTypeRequestDTO> =
@@ -33,24 +32,15 @@ const slice = createSlice({
     builder
       .addCase(fetchPostTypes.pending, (state) => {
         state.status = "loading";
+        state.list = [];
       })
       .addCase(fetchPostTypes.fulfilled, (state, action) => {
-        state.list = action.payload;
         state.status = "succeeded";
+        state.list = action.payload;
       })
       .addCase(fetchPostTypes.rejected, (state) => {
         state.status = "failed";
-      });
-    builder
-      .addCase(fetchPostTypeById.pending, (state) => {
-        state.detailStatus = "loading";
-      })
-      .addCase(fetchPostTypeById.fulfilled, (state, action) => {
-        state.detail = action.payload;
-        state.detailStatus = "succeeded";
-      })
-      .addCase(fetchPostTypeById.rejected, (state) => {
-        state.detailStatus = "failed";
+        state.list = [];
       });
   },
 });

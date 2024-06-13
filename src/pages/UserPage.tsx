@@ -24,6 +24,7 @@ const UserPage: FC<PageProps> = (props) => {
   const departmentsStatus = useAppSelector((state) => state.departments.status);
 
   const users = useAppSelector(usersSelector);
+
   const departments = useAppSelector((state) => state.departments.list);
 
   const navigate = useNavigate();
@@ -110,8 +111,18 @@ const UserPage: FC<PageProps> = (props) => {
   };
 
   useEffect(() => {
-    if (usersStatus === "idle") dispatch(fetchUsers());
-    if (departmentsStatus === "idle") dispatch(fetchDepartments());
+    const execute = async () => {
+      if (usersStatus === "idle") {
+        dispatch(fetchUsers());
+      }
+
+      if (departmentsStatus === "idle") {
+        dispatch(fetchDepartments());
+      }
+    };
+
+    execute();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

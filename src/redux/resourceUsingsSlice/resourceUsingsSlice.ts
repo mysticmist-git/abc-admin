@@ -1,10 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+import { ResourceUsingRequestDTO } from "@/config/dto/request";
 import { ResourceUsing } from "@/config/erd";
 import { CommonSliceState, DEFAULT_COMMON_STATE } from "../common";
 import { RootState } from "../storeUtils";
 import { fetchResourceUsings } from "./fetchResourceUsings";
-import { ResourceUsingRequestDTO } from "@/config/dto/request";
 
 const initialState: CommonSliceState<ResourceUsing, ResourceUsingRequestDTO> =
   DEFAULT_COMMON_STATE;
@@ -14,16 +14,19 @@ const slice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchResourceUsings.pending, (state) => {
-      state.status = "loading";
-    });
-    builder.addCase(fetchResourceUsings.fulfilled, (state, action) => {
-      state.status = "succeeded";
-      state.list = action.payload;
-    });
-    builder.addCase(fetchResourceUsings.rejected, (state) => {
-      state.status = "failed";
-    });
+    builder
+      .addCase(fetchResourceUsings.pending, (state) => {
+        state.status = "loading";
+        state.list = [];
+      })
+      .addCase(fetchResourceUsings.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.list = action.payload;
+      })
+      .addCase(fetchResourceUsings.rejected, (state) => {
+        state.status = "failed";
+        state.list = [];
+      });
   },
 });
 

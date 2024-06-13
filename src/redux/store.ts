@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 
+import commonUiReducer from "./commonUiSlice";
 import usersReducer from "./usersSlice/usersSlice";
 import postsReducer from "./postsSlice/postsSlice";
 import postTypesReducer from "./postTypesSlice/postTypeSlice";
@@ -12,6 +13,7 @@ import filesReducer from "./filesSlice/filesSlice";
 
 export default configureStore({
   reducer: {
+    common: commonUiReducer,
     users: usersReducer,
     posts: postsReducer,
     postTypes: postTypesReducer,

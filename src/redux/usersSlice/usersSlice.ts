@@ -14,16 +14,19 @@ const slice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchUsers.pending, (state) => {
-      state.status = "loading";
-    });
-    builder.addCase(fetchUsers.fulfilled, (state, action) => {
-      state.status = "succeeded";
-      state.list = action.payload;
-    });
-    builder.addCase(fetchUsers.rejected, (state) => {
-      state.status = "failed";
-    });
+    builder
+      .addCase(fetchUsers.pending, (state) => {
+        state.status = "loading";
+        state.list = [];
+      })
+      .addCase(fetchUsers.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.list = action.payload;
+      })
+      .addCase(fetchUsers.rejected, (state) => {
+        state.status = "failed";
+        state.list = [];
+      });
   },
 });
 
