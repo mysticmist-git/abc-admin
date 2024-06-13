@@ -1,4 +1,6 @@
-export type WithLabelProperty = {
+import { LabelHTMLAttributes } from "react";
+
+export type WithLabelProperty = LabelHTMLAttributes<HTMLLabelElement> & {
   label: string | undefined;
   horizontal?: boolean;
 };

@@ -60,11 +60,8 @@ const EventTypePage: FC<PageProps> = (props) => {
       });
 
       if (response.status == SUCCESS_STATUS_CODE) {
-        console.log("deleted");
         return;
       }
-
-      console.log("no ok");
     } catch (error) {
       console.log(error);
     }

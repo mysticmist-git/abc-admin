@@ -36,6 +36,7 @@ import createResource from "@/redux/resourcesSlice/createResource";
 import updateResource from "@/redux/resourcesSlice/updateResource";
 import clsx from "clsx";
 import DetailPage, { DetailPageProps } from "./DetailPage";
+import { createAction } from "@reduxjs/toolkit";
 
 type DetailResourcePage = DetailPageProps & CreateMode;
 
@@ -152,7 +153,7 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
 
   const inAction = commonInAction || detailInAction;
 
-  const { handleSubmit, register, reset, resetField, control, watch } =
+  const { handleSubmit, register, reset, resetField, control } =
     useForm<ResourceRequestWithFileImagesDTO>({
       defaultValues: detail || {},
     });
@@ -178,10 +179,8 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
   useEffect(() => {
     const execute = async () => {
       if (resourceTypesStatus === "idle") {
-        console.log("loading...");
         const resourceTypes = await dispatch(fetchResourceTypes()).unwrap();
         const { id } = resourceTypes[0];
-        console.log(id);
         resetField("resourceTypeId", {
           defaultValue: id,
         });
@@ -189,8 +188,6 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
     };
     execute();
   }, [dispatch, resetField, resourceTypesStatus]);
-
-  watch((values) => console.log(values));
 
   const navigate = useNavigate();
 
@@ -231,6 +228,7 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
     const updateValues: ResourceRequestWithStringImages = {
       ...rest,
       images: [...stringImages, ...imageUrls],
+      isFree: createMode ? true : rest.isFree,
     };
 
     console.log(updateValues);
@@ -262,8 +260,6 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
 
     toast(toastMessage, toastOptions);
   };
-
-  watch((values) => console.log(values));
 
   const body = (
     <form
