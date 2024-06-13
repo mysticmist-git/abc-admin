@@ -4,6 +4,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { DEFAULT_COMMON_STATE, CommonSliceState } from "../common";
 import { RootState } from "../storeUtils";
 import { fetchPostTypes } from "./fetchPostTypes";
+import { putPostType } from "./putPostType";
 
 const initialState: CommonSliceState<PostType, PostTypeRequestDTO> =
   DEFAULT_COMMON_STATE;
@@ -30,6 +31,7 @@ const slice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // GET
       .addCase(fetchPostTypes.pending, (state) => {
         state.status = "loading";
         state.list = [];
@@ -41,6 +43,16 @@ const slice = createSlice({
       .addCase(fetchPostTypes.rejected, (state) => {
         state.status = "failed";
         state.list = [];
+      })
+      // PUT
+      .addCase(putPostType.pending, (state) => {
+        state.detailInAction = true;
+      })
+      .addCase(putPostType.fulfilled, (state) => {
+        state.detailInAction = false;
+      })
+      .addCase(putPostType.rejected, (state) => {
+        state.detailInAction = false;
       });
   },
 });
@@ -55,5 +67,7 @@ export const postTypeDetailStatusSelector = (state: RootState) =>
   state.postTypes.detailStatus;
 export const postTypeDetailSelector = (state: RootState) =>
   state.postTypes.detail;
+export const postTypeDetailInActionSelector = (state: RootState) =>
+  state.postTypes.detailInAction;
 
 export default slice.reducer;
