@@ -266,14 +266,16 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
       onSubmit={handleSubmit(onSubmit)}
       className="flex flex-col items-start gap-2"
     >
-      <TextField
-        {...register("id", {
-          required: true,
-        })}
-        placeholder="Device"
-        label="ID"
-        disabled={inAction}
-      />
+      {!createMode && (
+        <TextField
+          {...register("id", {
+            required: true,
+          })}
+          placeholder="Device"
+          label="ID"
+          disabled={true}
+        />
+      )}
       <TextField
         {...register("name", {
           required: true,
@@ -284,9 +286,7 @@ const DetailResourcePage: FC<DetailResourcePage> = (props) => {
       />
       <WithLabel label="Mô tả">
         <textarea
-          {...register("description", {
-            required: true,
-          })}
+          {...register("description")}
           placeholder="Mô tả tài nguyên"
           className="border p-1 shadow"
           rows={6}

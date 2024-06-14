@@ -10,7 +10,11 @@ export const GradeArray: Grade[] = ["employee", "manager", "director", "admin"];
 export type MetricType = "like" | "view" | "comment";
 
 export type ApprovalStatus = "pending" | "approve" | "cancel";
-export const ApprovalStatusArray = ["pending", "approve", "cancel"];
+export const ApprovalStatusArray: ApprovalStatus[] = [
+  "pending",
+  "approve",
+  "cancel",
+];
 
 export type Request = {
   id: number;
@@ -37,14 +41,14 @@ export type User = {
   grade: Grade;
   //
   username: string;
-  birthday: Date;
+  birthday: string;
   email: string;
   avatar: string;
   description: string;
   //
   permissionIdToCRUD: Grade[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   status: StatusType;
 };
 
@@ -165,12 +169,16 @@ export type ResourceUsing = {
   resourceId: number;
   reporterUid: string;
   borrowerUid: string;
-  startAt: string;
-  endAt: string;
+  startAt: number;
+  endAt: number;
   //
-  createdAt: string;
-  updatedAt: string;
+  createdAt: number;
+  updatedAt: number;
   status: StatusType;
+
+  approvalStatus: ApprovalStatus;
+  decisionDetail: string;
+  decidedAt: number;
 };
 
 export type EventType = {

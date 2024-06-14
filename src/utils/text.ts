@@ -1,4 +1,11 @@
-import { Department, Grade, Resource, StatusType, User } from "@/config/erd";
+import {
+  ApprovalStatus,
+  Department,
+  Grade,
+  Resource,
+  StatusType,
+  User,
+} from "@/config/erd";
 import dayjs from "dayjs";
 
 export const capitalized = (text: string) => {
@@ -24,11 +31,20 @@ export const getGradeText = (grade: Grade): string => gradeTextMap[grade];
 export const statusTypeTextMap: Record<StatusType, string> = {
   active: "Hoạt động",
   inactive: "Khoá",
-  create: "Create",
+  create: "Tạo",
+};
+
+export const approvalStatusTextMap: Record<ApprovalStatus, string> = {
+  pending: "Chờ duyệt",
+  approve: "Đồng ý",
+  cancel: "Huỷ",
 };
 
 export const getStatusTypeText = (statusType: StatusType): string =>
   statusTypeTextMap[statusType];
+
+export const getApprovalStatusText = (approvalStatus: ApprovalStatus): string =>
+  approvalStatusTextMap[approvalStatus];
 
 export const getDepartmentNameByIdFrom =
   (departments: Department[]) => (id: number) =>
@@ -44,5 +60,12 @@ export const getResourceTextFrom =
     resources.find((resource) => resource.id === resourceId)?.name ||
     `ID: ${resourceId}`;
 
-export const getDateText = (date: Date) =>
-  dayjs(date).format("HH:mm DD/MM/YYYY");
+export const getDateText = (date: Date, options?: { withHour: boolean }) => {
+  const { withHour = false } = options || {};
+
+  if (withHour) {
+    return dayjs(date).format("HH:mm DD/MM/YYYY");
+  }
+
+  return dayjs(date).format("DD/MM/YYYY");
+};

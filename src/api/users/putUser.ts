@@ -2,20 +2,18 @@ import axios from "axios";
 
 import { NO_CONTENT, SUCCESS_STATUS_CODE } from "@/config/api/api";
 import { apiUrl } from "@/utils/api";
+import { UserRequestDTO } from "@/config/dto/request";
 
-export default async (data: number): Promise<boolean> => {
-  const url = apiUrl("/ResourceUsing");
+export default async (data: UserRequestDTO) => {
+  const url = apiUrl("/User");
   const body = [data];
 
   try {
-    const response = await axios.delete(url, {
+    const response = await axios.put(url, body, {
       headers: {
         "Content-Type": "application/json",
       },
-      data: body,
     });
-
-    console.log(response);
 
     return (
       response.status === SUCCESS_STATUS_CODE || response.status === NO_CONTENT

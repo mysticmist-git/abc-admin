@@ -13,7 +13,7 @@ const TextField = forwardRef<
 
   return (
     <WithLabel label={label}>
-      <input {...props} type="text" ref={ref} className={className} />
+      <input type="text" ref={ref} {...props} className={className} />
     </WithLabel>
   );
 });

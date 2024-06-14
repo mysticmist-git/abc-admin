@@ -17,19 +17,28 @@ export type RequestRequestDTO = {
   status: StatusType;
 };
 
-export type UserRequestDTO = {
-  uid: string;
+export type BaseUserRequestDTO = {
   username: string;
   departmentId: number;
   grade: Grade;
   //
-  birthday: Date;
   email: string;
-  avatar: File[];
   description: string;
   //
   permissionIdToCRUD: Grade[];
   status: StatusType;
+};
+
+export type UserForm = BaseUserRequestDTO & {
+  avatar: File | string;
+  birthday: string;
+  password: string;
+};
+
+export type UserRequestDTO = BaseUserRequestDTO & {
+  uid: string;
+  avatar: string;
+  birthday: number;
 };
 
 export type PermissionRequestDTO = {
@@ -148,17 +157,21 @@ export type BaseResourceUsingRequestDTO = {
   resourceId: number;
   reporterUid: string;
   borrowerUid: string;
+  approvalStatus: ApprovalStatus;
+  decisionDetail: string;
   status: StatusType;
 };
 
 export type ResourceUsingStringDateRequestDTO = BaseResourceUsingRequestDTO & {
   startAt: string;
   endAt: string;
+  decidedAt: string | undefined;
 };
 
 export type ResoureUsingNumberDateRequestDTO = BaseResourceUsingRequestDTO & {
   startAt: number;
   endAt: number;
+  decidedAt: number;
 };
 
 export type EventTypeRequestDTO = {

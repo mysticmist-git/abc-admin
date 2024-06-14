@@ -1,10 +1,10 @@
 import axios from "axios";
 
-import { NO_CONTENT, SUCCESS_STATUS_CODE } from "@/config/api/api";
+import { SUCCESS_STATUS_CODE } from "@/config/api/api";
 import { apiUrl } from "@/utils/api";
 
 export default async (data: number): Promise<boolean> => {
-  const url = apiUrl("/ResourceUsing");
+  const url = apiUrl("/User");
   const body = [data];
 
   try {
@@ -15,11 +15,7 @@ export default async (data: number): Promise<boolean> => {
       data: body,
     });
 
-    console.log(response);
-
-    return (
-      response.status === SUCCESS_STATUS_CODE || response.status === NO_CONTENT
-    );
+    return response.status === SUCCESS_STATUS_CODE;
   } catch (error) {
     console.log(error);
     return false;

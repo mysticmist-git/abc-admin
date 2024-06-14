@@ -7,13 +7,13 @@ import { usePage } from "@/hooks";
 import { fetchResources } from "@/redux/resourcesSlice/fetchResources";
 import removeResource from "@/redux/resourcesSlice/removeResource";
 import {
-  resourceDetailCleared,
   resourcesSelector,
   resourcesStatusSelector,
 } from "@/redux/resourcesSlice/resourcesSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/storeUtils";
 
 import {
+  getApprovalStatusText,
   getDateText,
   getResourceTextFrom,
   getStatusTypeText,
@@ -39,6 +39,8 @@ import {
 } from "@/redux/usersSlice/usersSlice";
 import { fetchUsers } from "@/redux/usersSlice/fetchUsers";
 import { ResourceUsing } from "@/config/erd";
+import dayjs from "dayjs";
+import removeResourceUsing from "@/redux/resourceUsingsSlice/removeResourceUsing";
 
 const ResourceUsingPage: FC<PageProps> = (props) => {
   const dispatch = useAppDispatch();
@@ -73,7 +75,7 @@ const ResourceUsingPage: FC<PageProps> = (props) => {
   };
 
   const handleDeleteRow = async () => {
-    await dispatch(removeResource(Number(deleteId))).unwrap();
+    await dispatch(removeResourceUsing(Number(deleteId))).unwrap();
     toast.success("Đã xóa");
     deleteHandlerById(undefined);
     closeDialog();
@@ -94,7 +96,7 @@ const ResourceUsingPage: FC<PageProps> = (props) => {
             "Người báo cáo",
             "Bắt đầu",
             "Kết thúc",
-            "Tình trạng",
+            "Tình trạng mượn",
           ]}
         />
 
@@ -110,6 +112,7 @@ const ResourceUsingPage: FC<PageProps> = (props) => {
                 startAt,
                 endAt,
                 status,
+                approvalStatus,
               } = row;
 
               return (
@@ -123,9 +126,18 @@ const ResourceUsingPage: FC<PageProps> = (props) => {
                   <TD>{getResourceText(resourceId)}</TD>
                   <TD>{getUserName(borrowerUid)}</TD>
                   <TD>{getUserName(reporterUid)}</TD>
-                  <TD>{getDateText(new Date(startAt))}</TD>
-                  <TD>{getDateText(new Date(endAt))}</TD>
-                  <TD>{getStatusTypeText(status)}</TD>
+                  <TD>
+                    {getDateText(dayjs(startAt * 1000).toDate(), {
+                      withHour: false,
+                    })}
+                  </TD>
+                  <TD>
+                    {getDateText(dayjs(endAt * 1000).toDate(), {
+                      withHour: false,
+                    })}
+                  </TD>
+
+                  <TD>{getApprovalStatusText(approvalStatus)}</TD>
                   <TD>
                     <div className="flex items-center justify-center">
                       <Button color="danger" onClick={deleteHandlerById(id)}>
@@ -145,7 +157,7 @@ const ResourceUsingPage: FC<PageProps> = (props) => {
         onDelete={handleDeleteRow}
         deleteObject={{
           id: deleteId,
-          text: "tài nguyên",
+          text: "yêu cầu tài nguyên",
         }}
         isDeleting={inAction}
       />

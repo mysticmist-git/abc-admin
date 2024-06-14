@@ -70,12 +70,12 @@ const EventTypePage: FC<PageProps> = (props) => {
   const body = (
     <>
       <table className="w-full mt-8">
-        <THead headings={["#", "Id"]} />
+        <THead headings={["#", "Id", "Tên", "Mô tả"]} />
 
         <tbody>
           {loading && <LoadingRow />}
           {rows.map((row, index) => {
-            const { id } = row;
+            const { id, name, description } = row;
             return (
               <tr
                 key={index}
@@ -83,6 +83,8 @@ const EventTypePage: FC<PageProps> = (props) => {
                 onClick={onRowClick(row)}
               >
                 <TD>{(index + 1).toString().padStart(2, "0")}</TD>
+                <TD>{name}</TD>
+                <TD>{description}</TD>
                 <TD>
                   <div className="flex items-center justify-center">
                     <Button color="danger" onClick={deleteHandlerById(id)}>

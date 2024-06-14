@@ -14,6 +14,12 @@ import Page, { PageProps } from "./Page";
 import { usePage } from "@/hooks";
 import { fetchDepartments } from "@/redux/departmentsSlice/fetchDepartments";
 import { isLoading } from "@/utils/ui";
+import {
+  usersSelector,
+  usersStatusSelector,
+} from "@/redux/usersSlice/usersSlice";
+import { fetchUsers } from "@/redux/usersSlice/fetchUsers";
+import { getStatusTypeText, getUserNameByUidFrom } from "@/utils/text";
 
 const DepartmentPage: FC<PageProps> = (props) => {
   const navigate = useNavigate();
@@ -22,11 +28,16 @@ const DepartmentPage: FC<PageProps> = (props) => {
   const status = useAppSelector(departmentsStatusSelector);
   const rows = useAppSelector(departmentsSelector);
 
+  const users = useAppSelector(usersSelector);
+  const usersStatus = useAppSelector(usersStatusSelector);
+
   const { deleteState, dialog } = usePage();
   const { id: deleteId, deleteHandlerById } = deleteState;
   const { isOpen: isDialogOpen, close: closeDialog } = dialog;
 
   const loading = isLoading(status);
+
+  const getUsernameByUid = getUserNameByUidFrom(users);
 
   const body = (
     <>
@@ -48,8 +59,8 @@ const DepartmentPage: FC<PageProps> = (props) => {
                 <TD>{(index + 1).toString().padStart(2, "0")}</TD>
                 <TD>{id}</TD>
                 <TD>{name}</TD>
-                <TD>{directorUid}</TD>
-                <TD>{status}</TD>
+                <TD>{getUsernameByUid(directorUid)}</TD>
+                <TD>{getStatusTypeText(status)}</TD>
                 <TD>
                   <div className="flex items-center justify-center">
                     <Button color="danger" onClick={deleteHandlerById(id)}>
@@ -77,6 +88,7 @@ const DepartmentPage: FC<PageProps> = (props) => {
 
   useEffect(() => {
     if (status === "idle") dispatch(fetchDepartments());
+    if (usersStatus === "idle") dispatch(fetchUsers());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -3,13 +3,14 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { ToastOptions, toast } from "react-toastify";
 
-import { StatusTypeArray } from "@/config/erd";
+import { ApprovalStatusArray, StatusTypeArray } from "@/config/erd";
 import { RouteKey } from "@/config/route";
 import { useAppDispatch, useAppSelector } from "@/redux/storeUtils";
 import { route } from "@/utils/route";
 
 import {
   capitalized,
+  getApprovalStatusText,
   getResourceTextFrom,
   getStatusTypeText,
   getSubmitText,
@@ -19,19 +20,26 @@ import {
 import { CreateMode } from "./common";
 
 import {
-  resourceDetailInActionSelector,
   resourcesSelector,
   resourcesStatusSelector,
 } from "@/redux/resourcesSlice/resourcesSlice";
 
 import { Loading } from "@/components/feedback";
-import { Button, DatePicker, Select, TextField } from "@/components/form";
+import {
+  Button,
+  DatePicker,
+  Select,
+  TextArea,
+  TextField,
+} from "@/components/form";
 import { commonInActionSelector } from "@/redux/commonUiSlice/commonSlice";
 import createResourceUsing from "@/redux/resourceUsingsSlice/createResourceUsing";
 import fetchResourceUsingById from "@/redux/resourceUsingsSlice/fetchResourceUsingById";
 import {
+  detailResourceUsingInActionSelector,
   detailResourceUsingSelector,
   detailResourceUsingStatusSelector,
+  resourceUsingLoaded,
 } from "@/redux/resourceUsingsSlice/resourceUsingsSlice";
 import updateResourceUsing from "@/redux/resourceUsingsSlice/updateResourceUsing";
 import { fetchResources } from "@/redux/resourcesSlice/fetchResources";
@@ -66,7 +74,7 @@ const DetailResourceUsingPage: FC<DetailResourceUsingPage> = (props) => {
   const usersStatus = useAppSelector(usersStatusSelector);
   const users = useAppSelector(usersSelector);
 
-  const detailInAction = useAppSelector(resourceDetailInActionSelector);
+  const detailInAction = useAppSelector(detailResourceUsingInActionSelector);
 
   const loading =
     detailStatus === "loading" ||
@@ -76,7 +84,25 @@ const DetailResourceUsingPage: FC<DetailResourceUsingPage> = (props) => {
 
   const { handleSubmit, register, reset, resetField, control, watch } =
     useForm<ResourceUsingStringDateRequestDTO>({
-      defaultValues: detail || {},
+      defaultValues: detail
+        ? {
+            id: detail?.id,
+            resourceId: detail?.resourceId,
+            borrowerUid: detail?.borrowerUid,
+            approvalStatus: detail?.approvalStatus,
+            reporterUid: detail?.reporterUid,
+            decidedAt: detail.decidedAt
+              ? dayjs(+detail.decidedAt * 1000).format("YYYY-MM-DD")
+              : undefined,
+            decisionDetail: detail?.decisionDetail,
+            startAt: dayjs(+detail?.startAt * 1000).format("YYYY-MM-DD"),
+            endAt: dayjs(+detail?.endAt * 1000).format("YYYY-MM-DD"),
+            status: detail?.status,
+          }
+        : {
+            startAt: dayjs().format("YYYY-MM-DD"),
+            endAt: dayjs().add(3, "day").format("YYYY-MM-DD"),
+          },
     });
 
   useEffect(() => {
@@ -89,7 +115,17 @@ const DetailResourceUsingPage: FC<DetailResourceUsingPage> = (props) => {
     // get the stop function
     dispatch(fetchResourceUsingById(id!))
       .unwrap()
-      .then((payload) => reset(payload || {}));
+      .then((payload) => {
+        const value =
+          {
+            ...payload,
+            startAt: dayjs(payload?.startAt * 1000).format("YYYY-MM-DD"),
+            endAt: dayjs(payload?.endAt * 1000).format("YYYY-MM-DD"),
+          } || {};
+
+        dispatch(resourceUsingLoaded(value));
+        reset(value);
+      });
   }, [createMode, detailStatus, dispatch, id, reset]);
 
   useEffect(() => {
@@ -112,6 +148,8 @@ const DetailResourceUsingPage: FC<DetailResourceUsingPage> = (props) => {
 
   const handleNavigateBack = () => navigate(route(RouteKey.ResourceUsingPage));
 
+  console.log(detail);
+
   const onSubmit: SubmitHandler<ResourceUsingStringDateRequestDTO> = async (
     values
   ) => {
@@ -124,8 +162,12 @@ const DetailResourceUsingPage: FC<DetailResourceUsingPage> = (props) => {
     const updateValues: ResoureUsingNumberDateRequestDTO = {
       ...rest,
       resourceId: Number(resourceId),
-      startAt: dayjs(startAt).valueOf(),
-      endAt: dayjs(endAt).valueOf(),
+      decidedAt:
+        rest.approvalStatus === "approve"
+          ? Math.floor(dayjs().valueOf() / 1000)
+          : 0,
+      startAt: Math.floor(dayjs(startAt).valueOf() / 1000),
+      endAt: Math.floor(dayjs(endAt).valueOf() / 1000),
     };
 
     console.log(updateValues);
@@ -177,7 +219,7 @@ const DetailResourceUsingPage: FC<DetailResourceUsingPage> = (props) => {
           })}
           placeholder="Device"
           label="ID"
-          disabled={inAction}
+          disabled={true}
         />
       )}
       <Select
@@ -185,7 +227,9 @@ const DetailResourceUsingPage: FC<DetailResourceUsingPage> = (props) => {
           required: true,
         })}
         label="Tài nguyên"
-        options={resources.map((resource) => resource.id)}
+        options={resources
+          .filter((resource) => resource.isFree)
+          .map((resource) => resource.id)}
         optionLabelConverter={getResourceTextFrom(resources)}
         disabled={inAction}
       />
@@ -219,6 +263,22 @@ const DetailResourceUsingPage: FC<DetailResourceUsingPage> = (props) => {
         })}
         label="Ngày kết thúc"
         defaultValue={dayjs().add(3, "day").format("YYYY-MM-DD")}
+      />
+
+      <Select
+        {...register("approvalStatus", {
+          required: true,
+        })}
+        options={ApprovalStatusArray}
+        optionLabelConverter={getApprovalStatusText}
+        label="Tình trạng mượn"
+      />
+
+      <TextArea
+        {...register("decisionDetail")}
+        label="Chi tiết"
+        defaultValue={detail?.decisionDetail}
+        placeholder="Chi tiết yêu cầu"
       />
 
       <Select

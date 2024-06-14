@@ -6,7 +6,11 @@ import { usePage } from "@/hooks";
 import { fetchDepartments } from "@/redux/departmentsSlice/fetchDepartments";
 import { useAppDispatch, useAppSelector } from "@/redux/storeUtils";
 import { fetchUsers } from "@/redux/usersSlice/fetchUsers";
-import { usersSelector } from "@/redux/usersSlice/usersSlice";
+import {
+  userDetailCleared,
+  userDetailLoaded,
+  usersSelector,
+} from "@/redux/usersSlice/usersSlice";
 
 import { getGradeText } from "@/utils/text";
 import { isLoading } from "@/utils/ui";
@@ -16,6 +20,7 @@ import { Button } from "@/components/form";
 import { LoadingRow, TD, THead } from "@/components/table";
 
 import Page, { PageProps } from "./Page";
+import { User } from "@/config/erd";
 
 const UserPage: FC<PageProps> = (props) => {
   const dispatch = useAppDispatch();
@@ -36,6 +41,14 @@ const UserPage: FC<PageProps> = (props) => {
   const { name = "người dùng" } = props;
 
   const loading = isLoading(usersStatus);
+
+  const onRowClick = (row: User) => () => {
+    const { uid } = row;
+
+    dispatch(userDetailLoaded(row));
+
+    navigate(uid);
+  };
 
   const body = (
     <>
@@ -68,9 +81,7 @@ const UserPage: FC<PageProps> = (props) => {
                 <tr
                   key={index}
                   className="border rounded cursor-pointer transition-colors hover:bg-neutral-100"
-                  onClick={() => {
-                    navigate(`${user.uid}`);
-                  }}
+                  onClick={onRowClick(user)}
                 >
                   <TD>{(index + 1).toString().padStart(2, "0")}</TD>
                   <TD>{uid}</TD>
@@ -108,6 +119,9 @@ const UserPage: FC<PageProps> = (props) => {
     ...props,
     name,
     body,
+    onCreateNew: () => {
+      dispatch(userDetailCleared());
+    },
   };
 
   useEffect(() => {

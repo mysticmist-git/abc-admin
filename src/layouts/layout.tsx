@@ -15,8 +15,24 @@ const routes = [
     route: "/users",
   },
   {
+    label: "Loại bài đăng",
+    route: "/postTypes",
+  },
+  {
+    label: "Loại sự kiện",
+    route: "/eventTypes",
+  },
+  {
+    label: "Phòng ban",
+    route: "/departments",
+  },
+  {
     label: "Tài nguyên",
     route: "/resources",
+  },
+  {
+    label: "Loại tài nguyên",
+    route: "/resourceTypes",
   },
   {
     label: "Yêu cầu sử dụng",

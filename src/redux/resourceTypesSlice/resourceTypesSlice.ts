@@ -12,7 +12,21 @@ const initialState: CommonSliceState<ResourceType, ResouceTypeRequestDTO> =
 const slice = createSlice({
   name: "resourceTypes",
   initialState,
-  reducers: {},
+  reducers: {
+    resourceTypeDetailCleared: (state) => {
+      state.detail = null;
+      state.detailStatus = "idle";
+    },
+    resourceTypeLoaded: (state, action) => {
+      state.detail = action.payload;
+      state.detailStatus = "succeeded";
+    },
+    resourceTypeDeleted: (state, action) => {
+      state.list = state.list.filter(
+        (resource) => resource.id !== action.payload
+      );
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchResourceTypes.pending, (state) => {
