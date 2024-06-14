@@ -64,10 +64,7 @@ const Layout: FC<PropsWithChildren> = () => {
   return (
     <div className="grid grid-cols-12">
       <nav className="col-span-2 h-screen border-gray shadow">
-        <h1 className="p-1 py-3 text-center text-3xl font-bold text-primary-500">
-          ABC
-        </h1>
-        <ul>
+        <ul className="pt-6">
           {routes.map((route) => (
             <LinkComponent key={route.route} {...route} active={isActive} />
           ))}
