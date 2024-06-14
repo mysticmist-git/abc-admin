@@ -35,6 +35,10 @@ export enum RouteKey {
   DetailResourceUsingPage,
   NewResourceUsingPage,
 
+  RequestPage,
+  DetailRequestPage,
+  NewRequestPage,
+
   FilePage,
   DetailFilePage,
   NewFilePage,
@@ -97,6 +101,12 @@ export const resourceUsings = {
   [RouteKey.NewResourceUsingPage]: "/resourceUsings/new",
 };
 
+export const requests = {
+  [RouteKey.RequestPage]: "/requests",
+  [RouteKey.DetailRequestPage]: "/requests/:id",
+  [RouteKey.NewRequestPage]: "/requests/new",
+};
+
 export const files = {
   [RouteKey.FilePage]: "/files",
   [RouteKey.DetailFilePage]: "/files/:id",
@@ -115,5 +125,6 @@ export const routes = {
   ...resourceTypeRoutes,
   ...resources,
   ...resourceUsings,
+  ...requests,
   ...files,
 };

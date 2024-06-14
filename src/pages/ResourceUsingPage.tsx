@@ -5,7 +5,6 @@ import { toast } from "react-toastify";
 import { usePage } from "@/hooks";
 
 import { fetchResources } from "@/redux/resourcesSlice/fetchResources";
-import removeResource from "@/redux/resourcesSlice/removeResource";
 import {
   resourcesSelector,
   resourcesStatusSelector,
@@ -16,7 +15,6 @@ import {
   getApprovalStatusText,
   getDateText,
   getResourceTextFrom,
-  getStatusTypeText,
   getUserNameByUidFrom,
 } from "@/utils/text";
 import { isLoading } from "@/utils/ui";
@@ -157,7 +155,7 @@ const ResourceUsingPage: FC<PageProps> = (props) => {
         onDelete={handleDeleteRow}
         deleteObject={{
           id: deleteId,
-          text: "yêu cầu tài nguyên",
+          text: "sử dụng tài nguyên",
         }}
         isDeleting={inAction}
       />

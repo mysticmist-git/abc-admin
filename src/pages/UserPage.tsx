@@ -90,13 +90,13 @@ const UserPage: FC<PageProps> = (props) => {
                   <TD>{dayjs(birthday).format("YYYY-MM-DD")}</TD>
                   <TD>{gradeName}</TD>
                   <TD>{departmentName}</TD>
-                  <TD>
+                  {/* <TD>
                     <div className="flex items-center justify-center">
                       <Button color="danger" onClick={deleteHandlerById(uid)}>
                         Xoá
                       </Button>
                     </div>
-                  </TD>
+                  </TD> */}
                 </tr>
               );
             })}

@@ -278,7 +278,7 @@ const DetailResourceUsingPage: FC<DetailResourceUsingPage> = (props) => {
         {...register("decisionDetail")}
         label="Chi tiết"
         defaultValue={detail?.decisionDetail}
-        placeholder="Chi tiết yêu cầu"
+        placeholder="Chi tiết"
       />
 
       <Select

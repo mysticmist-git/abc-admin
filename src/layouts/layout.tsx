@@ -26,6 +26,10 @@ const routes = [
     label: "Phòng ban",
     route: "/departments",
   },
+  // {
+  //   label: "Yêu cầu",
+  //   route: "/requests",
+  // },
   {
     label: "Tài nguyên",
     route: "/resources",
@@ -35,7 +39,7 @@ const routes = [
     route: "/resourceTypes",
   },
   {
-    label: "Yêu cầu sử dụng",
+    label: "Sử dụng tài nguyên",
     route: "/resourceUsings",
   },
 ];
