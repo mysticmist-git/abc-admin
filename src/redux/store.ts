@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 
-import commonUiReducer from "./commonUiSlice/commonUiSlice";
+import commonUiReducer from "./commonUiSlice/commonSlice";
 import usersReducer from "./usersSlice/usersSlice";
 import postsReducer from "./postsSlice/postsSlice";
 import postTypesReducer from "./postTypesSlice/postTypeSlice";

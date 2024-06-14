@@ -11,7 +11,7 @@ const initialState: CommonUIState = {
 };
 
 const slice = createSlice({
-  name: "postTypes",
+  name: "common",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
@@ -25,6 +25,8 @@ const slice = createSlice({
       .addCase(uploadFiles.rejected, (state) => {
         state.inAction = false;
       });
+
+    // Fetch details
   },
 });
 

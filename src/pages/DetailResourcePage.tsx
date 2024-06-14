@@ -31,7 +31,7 @@ import {
 import uploadFiles from "@/api/common/uploadFiles";
 import { Loading } from "@/components/feedback";
 import { Button, Select, TextField, WithLabel } from "@/components/form";
-import { commonInActionSelector } from "@/redux/commonUiSlice/commonUiSlice";
+import { commonInActionSelector } from "@/redux/commonUiSlice/commonSlice";
 import createResource from "@/redux/resourcesSlice/createResource";
 import updateResource from "@/redux/resourcesSlice/updateResource";
 import clsx from "clsx";

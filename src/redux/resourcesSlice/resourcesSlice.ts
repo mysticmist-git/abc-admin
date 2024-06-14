@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 import { ResourceRequestWithFileImagesDTO } from "@/config/dto/request";
-import { ActionArray, Resource } from "@/config/erd";
+import { Resource } from "@/config/erd";
 import { CommonSliceState, DEFAULT_COMMON_STATE } from "../common";
 import { RootState } from "../storeUtils";
 import { fetchResources } from "./fetchResources";
@@ -47,6 +47,7 @@ const slice = createSlice({
         state.status = "failed";
         state.list = [];
       })
+
       // POST
       .addCase(createResource.pending, (state) => {
         state.detailInAction = true;
@@ -63,6 +64,7 @@ const slice = createSlice({
       .addCase(createResource.rejected, (state) => {
         state.detailInAction = false;
       })
+
       // PUT
       .addCase(updateResource.pending, (state) => {
         state.detailInAction = true;

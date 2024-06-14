@@ -19,6 +19,7 @@ import ResourcePage from "@/pages/ResourcePage";
 import ResourceUsingPage from "@/pages/ResourceUsingPage";
 import FilePage from "@/pages/FilePage";
 import DetailResourcePage from "@/pages/DetailResourcePage";
+import DetailResourceUsingPage from "@/pages/DetailResourceUsingPage";
 
 const ConfigRouter = createBrowserRouter([
   {
@@ -127,13 +128,24 @@ const ConfigRouter = createBrowserRouter([
         element: <DetailResourcePage name="tài nguyên" createMode />,
       },
 
+      // resource using
       {
         path: route(RouteKey.ResourceUsingPage),
         element: (
           <ResourceUsingPage
-            name="mượn tài nguyên"
+            name="sử dụng tài nguyên"
             route={route(RouteKey.ResourceUsingPage)}
           />
+        ),
+      },
+      {
+        path: route(RouteKey.DetailResourceUsingPage),
+        element: <DetailResourceUsingPage name="sử dụng tài nguyên" />,
+      },
+      {
+        path: route(RouteKey.NewResourceUsingPage),
+        element: (
+          <DetailResourceUsingPage name="sử dụng tài nguyên" createMode />
         ),
       },
 

@@ -1,30 +1,44 @@
-import dayjs from "dayjs";
 import { FC, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import { usePage } from "@/hooks";
 
+import { fetchResources } from "@/redux/resourcesSlice/fetchResources";
+import removeResource from "@/redux/resourcesSlice/removeResource";
+import {
+  resourceDetailCleared,
+  resourcesSelector,
+  resourcesStatusSelector,
+} from "@/redux/resourcesSlice/resourcesSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/storeUtils";
 
-import { getStatusTypeText, getUserNameByUidFrom } from "@/utils/text";
+import {
+  getDateText,
+  getResourceTextFrom,
+  getStatusTypeText,
+  getUserNameByUidFrom,
+} from "@/utils/text";
 import { isLoading } from "@/utils/ui";
-
-import { fetchResourceUsings } from "@/redux/resourceUsingsSlice/fetchResourceUsings";
-import {
-  resourceUsingsSelector,
-  resourceUsingsStatusSelector,
-} from "@/redux/resourceUsingsSlice/resourceUsingsSlice";
-import {
-  usersSelector,
-  usesStatusSelector,
-} from "@/redux/usersSlice/usersSlice";
 
 import { DeleteDialog } from "@/components/dialog";
 import { Button } from "@/components/form";
 import { LoadingRow, TD, THead } from "@/components/table";
 
 import Page, { PageProps } from "./Page";
+import {
+  resourceUsingDetailCleared,
+  resourceUsingLoaded,
+  resourceUsingsSelector,
+  resourceUsingsStatusSelector,
+} from "@/redux/resourceUsingsSlice/resourceUsingsSlice";
+import { fetchResourceUsings } from "@/redux/resourceUsingsSlice/fetchResourceUsings";
+import {
+  usersSelector,
+  usersStatusSelector,
+} from "@/redux/usersSlice/usersSlice";
 import { fetchUsers } from "@/redux/usersSlice/fetchUsers";
+import { ResourceUsing } from "@/config/erd";
 
 const ResourceUsingPage: FC<PageProps> = (props) => {
   const dispatch = useAppDispatch();
@@ -32,7 +46,10 @@ const ResourceUsingPage: FC<PageProps> = (props) => {
   const status = useAppSelector(resourceUsingsStatusSelector);
   const rows = useAppSelector(resourceUsingsSelector);
 
-  const usersStatus = useAppSelector(usesStatusSelector);
+  const resourcesStatus = useAppSelector(resourcesStatusSelector);
+  const resources = useAppSelector(resourcesSelector);
+
+  const usersStatus = useAppSelector(usersStatusSelector);
   const users = useAppSelector(usersSelector);
 
   const navigate = useNavigate();
@@ -41,9 +58,29 @@ const ResourceUsingPage: FC<PageProps> = (props) => {
   const { id: deleteId, deleteHandlerById } = deleteState;
   const { isOpen: isDialogOpen, close: closeDialog } = dialog;
 
-  const { name = "mượn tài nguyên" } = props;
+  const { name = "sử dụng tài nguyên" } = props;
+
+  const inAction = useAppSelector((state) => state.resourceUsings.inAction);
 
   const loading = isLoading(status);
+
+  const onRowClick = (row: ResourceUsing) => () => {
+    const { id } = row;
+
+    dispatch(resourceUsingLoaded(row));
+
+    navigate(id.toString());
+  };
+
+  const handleDeleteRow = async () => {
+    await dispatch(removeResource(Number(deleteId))).unwrap();
+    toast.success("Đã xóa");
+    deleteHandlerById(undefined);
+    closeDialog();
+  };
+
+  const getResourceText = getResourceTextFrom(resources);
+  const getUserName = getUserNameByUidFrom(users);
 
   const body = (
     <>
@@ -53,10 +90,10 @@ const ResourceUsingPage: FC<PageProps> = (props) => {
             "#",
             "ID",
             "Tài nguyên",
-            "Chịu trách nhiệm",
-            "Người mượn",
-            "Mượn lúc",
-            "Trả lại",
+            "Người sử dụng",
+            "Người báo cáo",
+            "Bắt đầu",
+            "Kết thúc",
             "Tình trạng",
           ]}
         />
@@ -64,32 +101,30 @@ const ResourceUsingPage: FC<PageProps> = (props) => {
         <tbody>
           {loading && <LoadingRow />}
           {!loading &&
-            rows.map((resourceUsing, index) => {
+            rows.map((row, index) => {
               const {
                 id,
                 resourceId,
-                reporterUid,
                 borrowerUid,
+                reporterUid,
                 startAt,
                 endAt,
                 status,
-              } = resourceUsing;
+              } = row;
 
               return (
                 <tr
                   key={index}
                   className="border rounded cursor-pointer transition-colors hover:bg-neutral-100"
-                  onClick={() => {
-                    navigate(`${id}`);
-                  }}
+                  onClick={onRowClick(row)}
                 >
                   <TD>{(index + 1).toString().padStart(2, "0")}</TD>
                   <TD>{id}</TD>
-                  <TD>{resourceId}</TD>
-                  <TD>{getUserNameByUidFrom(users)(reporterUid)}</TD>
-                  <TD>{getUserNameByUidFrom(users)(borrowerUid)}</TD>
-                  <TD>{dayjs(startAt).format("DD/MM/YYYY")}</TD>
-                  <TD>{dayjs(endAt).format("DD/MM/YYYY")}</TD>
+                  <TD>{getResourceText(resourceId)}</TD>
+                  <TD>{getUserName(borrowerUid)}</TD>
+                  <TD>{getUserName(reporterUid)}</TD>
+                  <TD>{getDateText(new Date(startAt))}</TD>
+                  <TD>{getDateText(new Date(endAt))}</TD>
                   <TD>{getStatusTypeText(status)}</TD>
                   <TD>
                     <div className="flex items-center justify-center">
@@ -107,11 +142,12 @@ const ResourceUsingPage: FC<PageProps> = (props) => {
       <DeleteDialog
         open={isDialogOpen}
         onClose={closeDialog}
-        onDelete={() => {}}
+        onDelete={handleDeleteRow}
         deleteObject={{
           id: deleteId,
-          text: "người dùng",
+          text: "tài nguyên",
         }}
+        isDeleting={inAction}
       />
     </>
   );
@@ -120,11 +156,27 @@ const ResourceUsingPage: FC<PageProps> = (props) => {
     ...props,
     name,
     body,
+    onCreateNew: () => {
+      dispatch(resourceUsingDetailCleared());
+    },
   };
 
   useEffect(() => {
-    if (status === "idle") dispatch(fetchResourceUsings());
-    if (usersStatus === "idle") dispatch(fetchUsers());
+    const commonFetchParams = {
+      page: 1,
+      limit: 100,
+    };
+
+    if (status === "idle") dispatch(fetchResourceUsings(commonFetchParams));
+
+    if (resourcesStatus === "idle") {
+      dispatch(fetchResources(commonFetchParams));
+    }
+
+    if (usersStatus === "idle") {
+      dispatch(fetchUsers(commonFetchParams));
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

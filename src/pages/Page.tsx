@@ -1,6 +1,4 @@
 import { Button } from "@/components/form";
-import { postTypeDetailCleared } from "@/redux/postTypesSlice/postTypeSlice";
-import { useAppDispatch } from "@/redux/storeUtils";
 import { capitalized, newRoute } from "@/utils/text";
 import { FC } from "react";
 import { useNavigate } from "react-router-dom";

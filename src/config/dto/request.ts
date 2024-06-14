@@ -122,7 +122,7 @@ export type ResouceTypeRequestDTO = {
   status: StatusType;
 };
 
-export type BaseResourceRequestDTO = {
+export type BaseResourceRequestStringDateDTO = {
   id: number;
   resourceTypeId: number;
   name: string;
@@ -133,24 +133,32 @@ export type BaseResourceRequestDTO = {
   status: StatusType;
 };
 
-export type ResourceRequestWithFileImagesDTO = BaseResourceRequestDTO & {
-  images: (File | string)[];
-};
+export type ResourceRequestWithFileImagesDTO =
+  BaseResourceRequestStringDateDTO & {
+    images: (File | string)[];
+  };
 
-export type ResourceRequestWithStringImages = BaseResourceRequestDTO & {
-  images: string[];
-};
+export type ResourceRequestWithStringImages =
+  BaseResourceRequestStringDateDTO & {
+    images: string[];
+  };
 
-export type ResourceUsingRequestDTO = {
+export type BaseResourceUsingRequestDTO = {
   id: number;
   resourceId: number;
   reporterUid: string;
   borrowerUid: string;
-  startAt: Date;
-  endAt: Date;
-  //
-
   status: StatusType;
+};
+
+export type ResourceUsingStringDateRequestDTO = BaseResourceUsingRequestDTO & {
+  startAt: string;
+  endAt: string;
+};
+
+export type ResoureUsingNumberDateRequestDTO = BaseResourceUsingRequestDTO & {
+  startAt: number;
+  endAt: number;
 };
 
 export type EventTypeRequestDTO = {

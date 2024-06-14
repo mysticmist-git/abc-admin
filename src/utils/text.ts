@@ -1,4 +1,5 @@
-import { Department, Grade, StatusType, User } from "@/config/erd";
+import { Department, Grade, Resource, StatusType, User } from "@/config/erd";
+import dayjs from "dayjs";
 
 export const capitalized = (text: string) => {
   return text.charAt(0).toUpperCase() + text.slice(1);
@@ -37,3 +38,11 @@ export const getDepartmentNameByIdFrom =
 export const getUserNameByUidFrom = (users: User[]) => (uid: string) =>
   users.find((user) => user.uid === uid)?.username ??
   "Người dùng không tồn tại";
+
+export const getResourceTextFrom =
+  (resources: Resource[]) => (resourceId: number) =>
+    resources.find((resource) => resource.id === resourceId)?.name ||
+    `ID: ${resourceId}`;
+
+export const getDateText = (date: Date) =>
+  dayjs(date).format("HH:mm DD/MM/YYYY");

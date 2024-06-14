@@ -165,11 +165,11 @@ export type ResourceUsing = {
   resourceId: number;
   reporterUid: string;
   borrowerUid: string;
-  startAt: Date;
-  endAt: Date;
+  startAt: string;
+  endAt: string;
   //
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   status: StatusType;
 };
 

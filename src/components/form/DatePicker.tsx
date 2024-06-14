@@ -17,7 +17,7 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
         <input {...rest} ref={ref} type="date" className={className} />
       </WithLabel>
     );
-  },
+  }
 );
 
 export default DatePicker;

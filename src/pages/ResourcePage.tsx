@@ -1,10 +1,12 @@
 import { FC, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import { usePage } from "@/hooks";
 
+import { fetchResources } from "@/redux/resourcesSlice/fetchResources";
+import removeResource from "@/redux/resourcesSlice/removeResource";
 import {
-  resourceDeleted,
   resourceDetailCleared,
   resourceLoaded,
   resourcesSelector,
@@ -12,6 +14,7 @@ import {
 } from "@/redux/resourcesSlice/resourcesSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/storeUtils";
 
+import { Resource } from "@/config/erd";
 import { getStatusTypeText } from "@/utils/text";
 import { isLoading } from "@/utils/ui";
 
@@ -19,11 +22,7 @@ import { DeleteDialog } from "@/components/dialog";
 import { Button } from "@/components/form";
 import { LoadingRow, TD, THead } from "@/components/table";
 
-import { fetchResources } from "@/redux/resourcesSlice/fetchResources";
 import Page, { PageProps } from "./Page";
-import { Resource } from "@/config/erd";
-import { toast } from "react-toastify";
-import removeResource from "@/redux/resourcesSlice/removeResource";
 
 const ResourcePage: FC<PageProps> = (props) => {
   const dispatch = useAppDispatch();

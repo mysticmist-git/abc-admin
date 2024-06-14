@@ -33,7 +33,7 @@ const slice = createSlice({
 // Action creators are generted for each case reducer function
 export const _ = slice.actions;
 
-export const usesStatusSelector = (state: RootState) => state.users.status;
+export const usersStatusSelector = (state: RootState) => state.users.status;
 export const usersSelector = (state: RootState) => state.users.list;
 
 export default slice.reducer;
